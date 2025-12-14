@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Kids PRO - Módulo</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/module.css">
+</head>
+<body class="module-interface">
+  <div id="app">
+    <!-- Header -->
+    <header class="module-header">
+      <button onclick="goBack()" class="btn-back">← Voltar</button>
+      <h1 id="module-title">Carregando...</h1>
+      <div class="fp-display">
+        <span class="fp-icon">⭐</span>
+        <span id="total-fp">0</span> FP
+      </div>
+    </header>
+
+    <!-- Module Content -->
+    <main class="module-main" id="module-content">
+      <!-- Conteúdo será carregado dinamicamente -->
+    </main>
+
+    <!-- Mascot Helper (floating) -->
+    <div class="mascot-helper" id="mascot-helper">
+      <div class="mascot-bubble" id="mascot-bubble">
+        <p>Estou aqui se precisar! 💙</p>
+      </div>
+      <button class="mascot-button" onclick="toggleMascot()">
+        🦊
+      </button>
+    </div>
+  </div>
+
+  <script src="/js/modules/dizer-nao.js"></script>
+  <script src="/js/modules/pedir-ajuda.js"></script>
+  <script src="/js/modules/protecao-corpo.js"></script>
+  <script src="/js/modules/emocoes.js"></script>
+  <script src="/js/modules/desafios.js"></script>
+  <script src="/js/module.js"></script>
+</body>
+</html>

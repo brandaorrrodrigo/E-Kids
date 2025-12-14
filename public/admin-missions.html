@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Gerador de Missões | E-Kids PRO</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #667eea;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 2.5em;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      font-size: 1em;
+      opacity: 0.9;
+    }
+
+    .missions-list {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+
+    .mission-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 5px solid #667eea;
+      position: relative;
+    }
+
+    .mission-card.new {
+      border-left-color: #f5576c;
+      background: linear-gradient(to right, #fff5f7, #f8f9fa);
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .mission-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .mission-prompt {
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    .mission-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 0.9em;
+      color: #999;
+    }
+
+    .mission-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+      font-size: 1.2em;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .success {
+      background: #efe;
+      color: #3c3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      height: 20px;
+      width: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🚀 Gerador de Missões Infinitas</h1>
+      <p>Sistema de Geração Automática - DIA 1 Implementado</p>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="card">
+      <h2>📊 Estatísticas</h2>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <h3 id="totalMissions">-</h3>
+          <p>Total de Missões</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="generatedMissions">-</h3>
+          <p>Missões Geradas</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="staticMissions">-</h3>
+          <p>Missões Estáticas</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="totalTemplates">-</h3>
+          <p>Templates Disponíveis</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gerador -->
+    <div class="card">
+      <h2>🎯 Gerar Novas Missões</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="area">Área</label>
+          <select id="area">
+            <option value="">Todas as áreas</option>
+            <option value="emotions">Emoções</option>
+            <option value="safety">Segurança</option>
+            <option value="body">Corpo</option>
+            <option value="creativity">Criatividade</option>
+            <option value="languages">Idiomas</option>
+            <option value="friendship">Amizade</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="difficulty">Dificuldade</label>
+          <select id="difficulty">
+            <option value="">Todas</option>
+            <option value="1">1 - Muito Fácil</option>
+            <option value="2">2 - Fácil</option>
+            <option value="3">3 - Fácil+</option>
+            <option value="4">4 - Médio</option>
+            <option value="5">5 - Médio+</option>
+            <option value="6">6 - Difícil</option>
+            <option value="7">7 - Difícil+</option>
+            <option value="8">8 - Muito Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="count">Quantidade</label>
+          <input type="number" id="count" value="10" min="1" max="100">
+        </div>
+
+        <div class="form-group">
+          <label for="phase">Fase</label>
+          <input type="number" id="phase" value="4" min="1" max="10">
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="balanced">
+        <label for="balanced">Gerar missões balanceadas (ignora área e dificuldade)</label>
+      </div>
+
+      <button class="btn" onclick="generateMissions()">✨ Gerar Missões</button>
+      <button class="btn btn-secondary" onclick="cleanOldMissions()">🗑️ Limpar Missões Antigas (30+ dias)</button>
+
+      <div id="generateMessage"></div>
+    </div>
+
+    <!-- Lista de Missões Recentes -->
+    <div class="card">
+      <h2>📝 Missões Geradas Recentemente</h2>
+      <div id="missionsList" class="missions-list">
+        <div class="loading">Carregando missões...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuração
+    const API_URL = 'http://localhost:3000';
+    let authToken = localStorage.getItem('ekids_token') || '';
+
+    // Carregar estatísticas
+    async function loadStats() {
+      try {
+        // Stats de missões
+        const statsRes = await fetch(`${API_URL}/api/admin/missions/stats`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const stats = await statsRes.json();
+
+        if (stats.success) {
+          document.getElementById('totalMissions').textContent = stats.stats.total;
+          document.getElementById('generatedMissions').textContent = stats.stats.generated;
+          document.getElementById('staticMissions').textContent = stats.stats.static;
+        }
+
+        // Stats de templates
+        const templatesRes = await fetch(`${API_URL}/api/admin/templates`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const templates = await templatesRes.json();
+
+        if (templates.success) {
+          document.getElementById('totalTemplates').textContent = templates.stats.total;
+        }
+      } catch (error) {
+        console.error('Erro ao carregar estatísticas:', error);
+      }
+    }
+
+    // Gerar missões
+    async function generateMissions() {
+      const area = document.getElementById('area').value;
+      const difficulty = document.getElementById('difficulty').value;
+      const count = parseInt(document.getElementById('count').value);
+      const phase = parseInt(document.getElementById('phase').value);
+      const balanced = document.getElementById('balanced').checked;
+
+      const messageDiv = document.getElementById('generateMessage');
+      messageDiv.innerHTML = '<div class="loading">⏳ Gerando missões...</div>';
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/generate-missions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({
+            area: area || undefined,
+            difficulty: difficulty ? parseInt(difficulty) : undefined,
+            count,
+            phase,
+            balanced
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageDiv.innerHTML = `<div class="success">✅ ${result.message}</div>`;
+          loadStats();
+          loadRecentMissions();
+        } else {
+          messageDiv.innerHTML = `<div class="error">❌ Erro: ${result.error}</div>`;
+        }
+      } catch (error) {
+        messageDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+      }
+    }
+
+    // Limpar missões antigas
+    async function cleanOldMissions() {
+      if (!confirm('Tem certeza que deseja limpar missões geradas há 30+ dias e não utilizadas?')) {
+        return;
+      }
+
+      const messageDiv = document.getElementById('generateMessage');
+      messageDiv.innerHTML = '<div class="loading">⏳ Limpando missões antigas...</div>';
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/generated-missions/clean?daysOld=30`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageDiv.innerHTML = `<div class="success">✅ ${result.deletedCount} missões antigas removidas</div>`;
+          loadStats();
+          loadRecentMissions();
+        } else {
+          messageDiv.innerHTML = `<div class="error">❌ Erro: ${result.error}</div>`;
+        }
+      } catch (error) {
+        messageDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+      }
+    }
+
+    // Carregar missões recentes (mock - precisa de um childId real)
+    async function loadRecentMissions() {
+      const listDiv = document.getElementById('missionsList');
+      listDiv.innerHTML = '<div class="loading">📋 Carregando missões recentes...</div>';
+
+      // Como não temos autenticação implementada aqui, vamos mostrar instruções
+      listDiv.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: #666;">
+          <p style="margin-bottom: 15px;">Para visualizar missões, use a API diretamente:</p>
+          <code style="background: #f5f5f5; padding: 10px; display: block; border-radius: 5px; margin-bottom: 10px;">
+            GET /api/children/:childId/missions?phase=4
+          </code>
+          <p>As missões novas terão <strong>isNew: true</strong> e <strong>isGenerated: true</strong></p>
+          <p style="margin-top: 15px; font-size: 0.9em;">
+            Missões geradas nos últimos 7 dias recebem o marcador "Nova!"
+          </p>
+        </div>
+      `;
+    }
+
+    // Carregar ao iniciar
+    window.addEventListener('load', () => {
+      loadStats();
+      loadRecentMissions();
+    });
+  </script>
+</body>
+</html>

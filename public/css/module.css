@@ -1,0 +1,279 @@
+/* E-KIDS PRO MVP - Interface de Módulo */
+
+.module-interface {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.module-header {
+  background: white;
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-back {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-back:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+#module-title {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.module-main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* Activity Cards */
+.activity-card {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.activity-card h2 {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.activity-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.activity-content p {
+  margin-bottom: var(--spacing-md);
+}
+
+.activity-content ul {
+  margin-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.activity-content li {
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Interactive Elements */
+.practice-area {
+  background: var(--bg-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  margin: var(--spacing-lg) 0;
+}
+
+.practice-area h3 {
+  font-size: 1.3rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+}
+
+.practice-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.practice-btn {
+  padding: var(--spacing-md);
+  background: white;
+  border: 3px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.practice-btn:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-color);
+  transform: scale(1.02);
+}
+
+.practice-btn.selected {
+  border-color: var(--success-color);
+  background: var(--success-color);
+  color: white;
+}
+
+.practice-feedback {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.practice-feedback.success {
+  background: #D4EDDA;
+  color: #155724;
+  border: 2px solid var(--success-color);
+}
+
+.practice-feedback.info {
+  background: #D1ECF1;
+  color: #0C5460;
+  border: 2px solid var(--primary-color);
+}
+
+/* Story Section */
+.story-section {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.story-content {
+  font-size: 1.2rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+}
+
+.story-character {
+  text-align: center;
+  font-size: 5rem;
+  margin: var(--spacing-lg) 0;
+}
+
+.story-bubble {
+  background: #E8F4FD;
+  padding: var(--spacing-md);
+  border-radius: 20px;
+  margin: var(--spacing-md) 0;
+  position: relative;
+}
+
+.story-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #E8F4FD;
+}
+
+/* Complete Button */
+.complete-activity-btn {
+  width: 100%;
+  padding: var(--spacing-lg);
+  background: var(--success-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: var(--spacing-lg);
+}
+
+.complete-activity-btn:hover {
+  background: #45B56A;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Mascot Helper (Floating) */
+.mascot-helper {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+.mascot-button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid var(--primary-color);
+  font-size: 2.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.mascot-button:hover {
+  transform: scale(1.1);
+}
+
+.mascot-bubble {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 250px;
+  display: none;
+}
+
+.mascot-bubble.show {
+  display: block;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .module-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .practice-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .mascot-helper {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .mascot-button {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+}

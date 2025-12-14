@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Kids PRO - Área dos Pais</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/parents.css">
+</head>
+<body class="parents-interface">
+  <div id="app">
+    <!-- Header -->
+    <header class="parents-header">
+      <div class="header-left">
+        <h1>👨‍👩‍👧 Área dos Pais</h1>
+      </div>
+      <div class="header-right">
+        <button onclick="goHome()" class="btn-secondary">Voltar</button>
+        <button onclick="logout()" class="btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="parents-main">
+      <!-- Introduction -->
+      <section class="intro-section">
+        <div class="intro-card">
+          <h2>Bem-vindo à Área dos Pais</h2>
+          <p class="message-box">
+            <strong>E-Kids PRO ensina aquilo que a escola e os jogos não ensinam:</strong><br>
+            Limites, proteção emocional, autonomia e diálogo.
+          </p>
+          <p class="reassurance">
+            Este sistema é uma ferramenta de apoio. <strong>Você</strong> é a primeira e mais importante linha de proteção da sua criança. Nós apenas fornecemos educação preventiva e relatórios para apoiar seu papel como responsável.
+          </p>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section class="dashboard-section">
+        <h2>Visão Geral</h2>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👶</div>
+            <div class="stat-info">
+              <h3 id="total-children">0</h3>
+              <p>Crianças</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+              <h3 id="total-fp">0</h3>
+              <p>FP Total</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <h3 id="total-activities">0</h3>
+              <p>Atividades</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Children Progress -->
+      <section class="children-section">
+        <h2>Progresso das Crianças</h2>
+        <div id="children-progress"></div>
+      </section>
+
+      <!-- Modules Info -->
+      <section class="modules-info-section">
+        <h2>Sobre os Módulos do MVP</h2>
+
+        <div class="module-info-card">
+          <h3>🛡️ 1. Meu Jeito, Meus Limites (Aprender a Dizer Não)</h3>
+          <p><strong>Objetivo:</strong> Ensinar a criança a estabelecer limites saudáveis e dizer "não" quando necessário.</p>
+          <ul>
+            <li>✅ Diferença entre obediência saudável e obrigação cega</li>
+            <li>✅ Quando pode dizer não (desconforto, cansaço, situações estranhas)</li>
+            <li>✅ Como dizer não de forma respeitosa</li>
+            <li>✅ Respeitar o "não" dos outros</li>
+          </ul>
+          <p class="parent-tip"><strong>Dica para pais:</strong> Respeite o "não" da criança em situações cotidianas (não forçar abraços/beijos). Isso ensina que ela tem direito de colocar limites sempre.</p>
+        </div>
+
+        <div class="module-info-card">
+          <h3>🤝 2. Posso Pedir Ajuda</h3>
+          <p><strong>Objetivo:</strong> Desenvolver confiança para buscar apoio quando necessário.</p>
+          <ul>
+            <li>✅ Pedir ajuda é força, não fraqueza</li>
+            <li>✅ Quando pedir ajuda (medo, confusão, dificuldade)</li>
+            <li>✅ Quem são as pessoas de confiança</li>
+            <li>✅ "E se ninguém acreditar? Continue falando"</li>
+          </ul>
+          <p class="parent-tip"><strong>Dica para pais:</strong> Quando a criança pede ajuda, agradeça pela confiança. Nunca responda "isso é bobeira".</p>
+        </div>
+
+        <div class="module-info-card">
+          <h3>💙 3. Cuidando de Mim (Proteção do Corpo)</h3>
+          <p><strong>Objetivo:</strong> Proteção do corpo e limites pessoais de forma não traumática.</p>
+          <ul>
+            <li>✅ "Você manda no seu corpo"</li>
+            <li>✅ Partes íntimas (linguagem clara)</li>
+            <li>✅ Segredos bons vs. segredos ruins</li>
+            <li>✅ Toques bons vs. toques desconfortáveis</li>
+            <li>✅ Círculo de confiança</li>
+          </ul>
+          <p class="parent-tip"><strong>Dica para pais:</strong> Se a criança falar sobre algo desconfortável, ACREDITE e APOIE. Busque ajuda profissional se necessário.</p>
+          <p class="resources"><strong>Recursos de apoio:</strong> Disque 100 (Disque Direitos Humanos), Conselho Tutelar local, Psicólogo infantil.</p>
+        </div>
+
+        <div class="module-info-card">
+          <h3>😊 4. Minhas Emoções</h3>
+          <p><strong>Objetivo:</strong> Reconhecer, nomear e expressar emoções de forma saudável.</p>
+          <ul>
+            <li>✅ Identificar 6 emoções básicas</li>
+            <li>✅ Nomear sentimentos</li>
+            <li>✅ Expressar emoções adequadamente</li>
+            <li>✅ Check-ins emocionais</li>
+          </ul>
+        </div>
+
+        <div class="module-info-card">
+          <h3>⭐ 5. Desafios Positivos</h3>
+          <p><strong>Objetivo:</strong> Atividades que fortalecem autoconfiança e habilidades socioemocionais.</p>
+          <ul>
+            <li>✅ Desenhos expressivos</li>
+            <li>✅ Histórias colaborativas</li>
+            <li>✅ Missões de bondade</li>
+            <li>✅ Sistema de FP (recompensas por esforço)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Important Notice -->
+      <section class="notice-section">
+        <div class="notice-card warning">
+          <h3>⚠️ Importante</h3>
+          <p><strong>Quando buscar ajuda profissional:</strong></p>
+          <ul>
+            <li>Mudanças comportamentais persistentes</li>
+            <li>Medo inexplicável de pessoas/lugares</li>
+            <li>Conhecimento sexual inadequado para idade</li>
+            <li>Menção explícita de abuso</li>
+          </ul>
+          <p><strong>O sistema NÃO substitui:</strong> Amor familiar, atenção parental, profissionais qualificados, autoridades competentes.</p>
+        </div>
+
+        <div class="notice-card info">
+          <h3>🛡️ Privacidade e Segurança</h3>
+          <p>Todos os dados são criptografados e protegidos conforme LGPD e ECA. Apenas você tem acesso às informações da sua família.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/parents.js"></script>
+</body>
+</html>

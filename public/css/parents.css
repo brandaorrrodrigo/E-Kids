@@ -1,0 +1,216 @@
+/* E-KIDS PRO MVP - Área dos Pais */
+
+.parents-interface {
+  background: #F5F7FA;
+}
+
+.parents-header {
+  background: white;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parents-header h1 {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+}
+
+.header-right {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.parents-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.parents-main section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.parents-main h2 {
+  font-size: 1.8rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+/* Intro Section */
+.intro-card {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.message-box {
+  background: #E8F4FD;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border-left: 4px solid var(--primary-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.reassurance {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.stat-card {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.stat-icon {
+  font-size: 3rem;
+}
+
+.stat-info h3 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.stat-info p {
+  color: var(--text-secondary);
+}
+
+/* Children Progress */
+.child-progress-card {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.child-progress-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.child-progress-header .avatar {
+  font-size: 3rem;
+}
+
+.child-progress-header .info h3 {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+}
+
+.modules-progress {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.module-progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.module-name {
+  font-weight: 600;
+}
+
+.module-activities {
+  color: var(--success-color);
+  font-size: 0.9rem;
+}
+
+/* Module Info Cards */
+.module-info-card {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.module-info-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+}
+
+.module-info-card ul {
+  margin-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.8;
+}
+
+.parent-tip {
+  background: #FFF9E6;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border-left: 4px solid var(--warning-color);
+  margin-top: var(--spacing-md);
+}
+
+.resources {
+  background: #E8F4FD;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border-left: 4px solid var(--primary-color);
+  margin-top: var(--spacing-md);
+}
+
+/* Notice Cards */
+.notice-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-md);
+}
+
+.notice-card.warning {
+  background: #FFF4E6;
+  border: 2px solid var(--warning-color);
+}
+
+.notice-card.info {
+  background: #E8F4FD;
+  border: 2px solid var(--primary-color);
+}
+
+.notice-card h3 {
+  margin-bottom: var(--spacing-md);
+}
+
+.notice-card ul {
+  margin-left: var(--spacing-lg);
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .parents-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

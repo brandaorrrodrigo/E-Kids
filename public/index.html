@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Kids PRO - Proteção e Autonomia Infantil</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Loading -->
+    <div id="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Carregando E-Kids PRO...</p>
+    </div>
+
+    <!-- Login / Registro -->
+    <div id="auth-screen" class="screen" style="display: none;">
+      <div class="auth-container">
+        <div class="logo">
+          <h1>🛡️ E-Kids PRO</h1>
+          <p class="tagline">Proteção, Autonomia e Amor</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('login')">Entrar</button>
+          <button class="tab" onclick="showTab('register')">Cadastrar</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form">
+          <h2>Bem-vindo de volta!</h2>
+          <input type="email" id="login-email" placeholder="Email" required>
+          <input type="password" id="login-password" placeholder="Senha" required>
+          <button type="submit" class="btn-primary">Entrar</button>
+          <p class="error-message" id="login-error"></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form" style="display: none;">
+          <h2>Criar Conta</h2>
+          <input type="text" id="register-name" placeholder="Seu nome" required>
+          <input type="email" id="register-email" placeholder="Email" required>
+          <input type="password" id="register-password" placeholder="Senha (mín. 6 caracteres)" required>
+          <button type="submit" class="btn-primary">Cadastrar</button>
+          <p class="error-message" id="register-error"></p>
+        </form>
+
+        <div class="auth-footer">
+          <p><strong>E-Kids PRO ensina aquilo que a escola e os jogos não ensinam:</strong></p>
+          <p>Limites, proteção emocional, autonomia e diálogo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seleção de Perfil -->
+    <div id="profile-select-screen" class="screen" style="display: none;">
+      <div class="container">
+        <div class="header">
+          <h1>Quem vai brincar hoje?</h1>
+          <button onclick="logout()" class="btn-secondary">Sair</button>
+        </div>
+
+        <div id="children-list" class="children-grid"></div>
+
+        <button onclick="showCreateChild()" class="btn-create">+ Adicionar Criança</button>
+
+        <div class="parent-link">
+          <a href="/pais.html" class="btn-link">👨‍👩‍👧 Área dos Pais</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Criar Criança Modal -->
+    <div id="create-child-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Criar Perfil da Criança</h2>
+        <form id="create-child-form">
+          <input type="text" id="child-name" placeholder="Nome da criança" required>
+          <input type="number" id="child-age" placeholder="Idade" min="4" max="12">
+
+          <div class="avatar-selector">
+            <p>Escolha um avatar:</p>
+            <div class="avatars">
+              <label><input type="radio" name="avatar" value="bear"> 🐻</label>
+              <label><input type="radio" name="avatar" value="cat"> 🐱</label>
+              <label><input type="radio" name="avatar" value="dog"> 🐶</label>
+              <label><input type="radio" name="avatar" value="rabbit"> 🐰</label>
+              <label><input type="radio" name="avatar" value="fox" checked> 🦊</label>
+              <label><input type="radio" name="avatar" value="panda"> 🐼</label>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary">Criar Perfil</button>
+            <button type="button" onclick="hideCreateChild()" class="btn-secondary">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

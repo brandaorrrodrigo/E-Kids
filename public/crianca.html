@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Mundo E-Kids 🌟</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/child.css">
+</head>
+<body class="child-interface">
+  <div id="app">
+    <!-- Header fixo -->
+    <header class="child-header">
+      <div class="header-left">
+        <div class="mascot-icon">🦊</div>
+        <div class="child-info">
+          <h2 id="child-name">E-Kids</h2>
+          <p id="mascot-greeting">Que bom te ver aqui!</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="fp-display">
+          <span class="fp-icon">⭐</span>
+          <span id="total-fp">0</span> FP
+        </div>
+        <button class="btn-switch-child" onclick="switchChild()" title="Trocar criança">
+          <span>👥</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navbar Infantil -->
+    <nav class="nav-kids" id="nav-kids">
+      <button class="nav-btn" data-screen="screen_home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Início</span>
+      </button>
+      <button class="nav-btn" data-screen="screen_map">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Mapa</span>
+      </button>
+      <button class="nav-btn" data-screen="screen_missions">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-label">Missões</span>
+      </button>
+      <button class="nav-btn" data-screen="screen_store">
+        <span class="nav-icon">🛒</span>
+        <span class="nav-label">Loja</span>
+      </button>
+      <button class="nav-btn" data-screen="screen_savings">
+        <span class="nav-icon">🏦</span>
+        <span class="nav-label">Cofrinho</span>
+      </button>
+      <button class="nav-btn" data-screen="screen_badges">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">Conquistas</span>
+      </button>
+      <button class="nav-btn" onclick="window.location.href='/minigames.html'">
+        <span class="nav-icon">🎮</span>
+        <span class="nav-label">Mini-Games</span>
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="child-main">
+
+      <!-- ========== SCREEN: HOME ========== -->
+      <section id="screen_home" class="screen">
+        <div class="home-mascot">
+          <div class="mascot-big">🦊</div>
+          <div class="mascot-level-badge" id="mascot-level-badge">
+            Nível <span id="mascot-level-display">1</span>
+          </div>
+          <div class="mascot-message-box" id="mascot-message">
+            <p>Oi! Vamos crescer juntos? 💙</p>
+          </div>
+        </div>
+
+        <div class="home-stats">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <p class="stat-label">Dias ativos</p>
+              <p class="stat-value" id="active-days-count">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+              <p class="stat-label">Total de FP</p>
+              <p class="stat-value" id="total-fp-home">0</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-big-primary" onclick="showScreen('screen_missions')">
+          COMEÇAR MISSÕES 🚀
+        </button>
+
+        <button class="btn-secondary-home" onclick="doCheckin()">
+          Check-in do Dia 💙
+        </button>
+      </section>
+
+      <!-- ========== SCREEN: MISSÕES ========== -->
+      <section id="screen_missions" class="screen">
+        <div class="screen-header">
+          <h2>🌟 Escolha sua Aventura</h2>
+          <p>Todas as missões são opcionais e divertidas!</p>
+        </div>
+
+        <div class="modules-grid" id="modules-grid">
+          <!-- Carregado via JS -->
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: MAPA DO MUNDO ========== -->
+      <section id="screen_map" class="screen">
+        <div class="screen-header">
+          <h2>🗺️ Mapa do Mundo</h2>
+          <p>Explore diferentes áreas e veja seu progresso!</p>
+        </div>
+
+        <div class="phases-selector" id="phases-selector">
+          <!-- Fases serão carregadas aqui -->
+        </div>
+
+        <div class="map-areas" id="map-areas">
+          <!-- Áreas serão carregadas aqui -->
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: LOJA FP ========== -->
+      <section id="screen_store" class="screen">
+        <div class="screen-header">
+          <h2>🛒 Loja FP</h2>
+          <p>Use seus FP para comprar itens incríveis!</p>
+          <p class="store-balance">Seu saldo: <span id="store-fp-balance">0</span> FP ⭐</p>
+        </div>
+
+        <div class="store-tabs">
+          <button class="store-tab active" onclick="filterStoreByType('all')">Tudo</button>
+          <button class="store-tab" onclick="filterStoreByType('panel')">Painéis</button>
+          <button class="store-tab" onclick="filterStoreByType('skin')">Skins</button>
+          <button class="store-tab" onclick="filterStoreByType('accessory')">Acessórios</button>
+        </div>
+
+        <div class="store-items-grid" id="store-items-grid">
+          <!-- Itens da loja serão carregados aqui -->
+        </div>
+
+        <div class="inventory-section" style="margin-top: 40px;">
+          <h3>🎒 Meu Inventário</h3>
+          <div class="inventory-grid" id="inventory-grid">
+            <!-- Inventário será carregado aqui -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: MÓDULO (EXECUÇÃO) ========== -->
+      <section id="screen_module" class="screen">
+        <div class="module-container">
+          <button class="btn-back" onclick="showScreen('screen_missions')">← Voltar</button>
+
+          <div class="module-header">
+            <div class="module-icon" id="module-icon">🎯</div>
+            <h2 id="module-title">Carregando...</h2>
+          </div>
+
+          <div class="module-story" id="module-story">
+            <p>Carregando história...</p>
+          </div>
+
+          <div class="module-question" id="module-question-section" style="display: none;">
+            <h3 id="module-question-text">Pergunta...</h3>
+            <div class="choices-grid" id="choices-grid">
+              <!-- Botões de escolha gerados via JS -->
+            </div>
+          </div>
+
+          <div class="module-feedback" id="module-feedback" style="display: none;">
+            <p id="feedback-text"></p>
+            <button class="btn-primary" onclick="completeModule()">Concluir e Ganhar FP! ⭐</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: BADGES ========== -->
+      <section id="screen_badges" class="screen">
+        <div class="screen-header">
+          <h2>🏆 Minhas Conquistas</h2>
+          <p>Cada passo que você dá é uma vitória!</p>
+        </div>
+
+        <div class="badges-container">
+          <p class="no-badges-yet" id="no-badges-text">Continue explorando para ganhar conquistas especiais! ✨</p>
+          <div class="badges-grid" id="badges-grid"></div>
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: COFRINHO ========== -->
+      <section id="screen_savings" class="screen">
+        <div class="screen-header">
+          <h2>🏦 Meu Cofrinho</h2>
+          <p>Quem guarda um pouquinho, ganha um pouquinho a mais!</p>
+        </div>
+
+        <div class="savings-container">
+          <div class="savings-balance">
+            <p class="savings-label">Guardado:</p>
+            <p class="savings-amount" id="cofrinho-saved">0 FP</p>
+          </div>
+
+          <div class="savings-yield" id="cofrinho-yield-section" style="display: none;">
+            <p class="yield-text">💰 Rendimento disponível: <span id="pending-yield">0 FP</span></p>
+            <button onclick="claimYield()" class="btn-yield">Receber! 🎉</button>
+          </div>
+
+          <div class="savings-actions">
+            <button onclick="openDepositModal()" class="btn-deposit">Guardar FP 💵</button>
+            <button onclick="openWithdrawModal()" class="btn-withdraw">Retirar FP 💰</button>
+          </div>
+
+          <div class="savings-hint">
+            <p>💡 Seu FP rende todo mês quando você guarda aqui!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SCREEN: PERFIL ========== -->
+      <section id="screen_profile" class="screen">
+        <div class="screen-header">
+          <h2>👧 Meu Perfil</h2>
+        </div>
+
+        <div class="profile-container" id="profile-container">
+          <!-- Se não houver criança, mostrar criação -->
+          <div class="profile-create" id="profile-create" style="display: none;">
+            <h3>Vamos começar! 🌟</h3>
+            <p>Qual é o seu nome?</p>
+            <input type="text" id="profile-name" placeholder="Seu nome aqui" maxlength="20" />
+
+            <p>Quantos anos você tem?</p>
+            <input type="number" id="profile-age" min="6" max="12" placeholder="Sua idade" />
+
+            <p>Escolha seu avatar:</p>
+            <div class="avatar-picker">
+              <button class="avatar-btn" data-avatar="😊" onclick="selectAvatar('😊')">😊</button>
+              <button class="avatar-btn" data-avatar="🦊" onclick="selectAvatar('🦊')">🦊</button>
+              <button class="avatar-btn" data-avatar="🐱" onclick="selectAvatar('🐱')">🐱</button>
+              <button class="avatar-btn" data-avatar="🦄" onclick="selectAvatar('🦄')">🦄</button>
+              <button class="avatar-btn" data-avatar="🌈" onclick="selectAvatar('🌈')">🌈</button>
+              <button class="avatar-btn" data-avatar="⭐" onclick="selectAvatar('⭐')">⭐</button>
+            </div>
+            <input type="hidden" id="selected-avatar" value="😊" />
+
+            <button class="btn-primary" onclick="createProfile()">Começar! 🚀</button>
+          </div>
+
+          <!-- Se houver criança, mostrar dados -->
+          <div class="profile-display" id="profile-display" style="display: none;">
+            <div class="profile-avatar" id="profile-avatar-display">😊</div>
+            <h3 id="profile-name-display">Nome</h3>
+            <p id="profile-age-display">Idade anos</p>
+
+            <div class="profile-stats">
+              <div class="profile-stat">
+                <p class="stat-label">Total de FP</p>
+                <p class="stat-value" id="profile-fp">0</p>
+              </div>
+              <div class="profile-stat">
+                <p class="stat-label">Dias Ativos</p>
+                <p class="stat-value" id="profile-days">0</p>
+              </div>
+              <div class="profile-stat">
+                <p class="stat-label">Conquistas</p>
+                <p class="stat-value" id="profile-badges">0</p>
+              </div>
+            </div>
+
+            <button class="btn-secondary" onclick="resetProfile()">Trocar de Perfil</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Depositar -->
+  <div id="deposit-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Guardar FP no Cofrinho 💵</h2>
+      <p>Quanto você quer guardar?</p>
+      <input type="number" id="deposit-amount" min="1" placeholder="Quantidade de FP" />
+      <p class="modal-hint">Seu FP atual: <span id="current-fp-deposit">0</span></p>
+      <div class="modal-actions">
+        <button onclick="depositFP()" class="btn-primary">Guardar</button>
+        <button onclick="closeDepositModal()" class="btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Retirar -->
+  <div id="withdraw-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Retirar FP do Cofrinho 💰</h2>
+      <p>Quanto você quer retirar?</p>
+      <input type="number" id="withdraw-amount" min="1" placeholder="Quantidade de FP" />
+      <p class="modal-hint">No cofrinho: <span id="current-savings-withdraw">0</span> FP</p>
+      <div class="modal-actions">
+        <button onclick="withdrawFP()" class="btn-primary">Retirar</button>
+        <button onclick="closeWithdrawModal()" class="btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup de FP Ganho -->
+  <div id="fp-popup" class="fp-popup" style="display: none;">
+    <div class="fp-popup-content">
+      <div class="fp-popup-icon">⭐</div>
+      <p class="fp-popup-text" id="fp-popup-text">+10 FP</p>
+    </div>
+  </div>
+
+  <script src="/js/child.js"></script>
+</body>
+</html>

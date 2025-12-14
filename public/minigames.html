@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini-Games - E-Kids PRO</title>
+  <link rel="stylesheet" href="css/minigames.css">
+</head>
+<body>
+  <!-- Container Principal -->
+  <div class="minigames-container">
+
+    <!-- Header -->
+    <header class="minigames-header">
+      <button class="btn-back" onclick="window.location.href='/crianca.html'">← Voltar</button>
+      <h1>🎮 Mini-Games</h1>
+      <div class="fp-display">
+        <span id="child-fp">0</span> FP
+      </div>
+    </header>
+
+    <!-- Seleção de Jogos -->
+    <section id="game-selection" class="game-selection">
+      <h2>Escolha seu jogo!</h2>
+
+      <div class="games-grid">
+        <!-- Jogo da Memória -->
+        <div class="game-card" onclick="selectGame('memoria')">
+          <div class="game-level-badge" id="level-badge-memoria">
+            <span class="level-icon">⭐</span>
+            <span class="level-text">Nível 1</span>
+          </div>
+          <div class="game-icon">🧠</div>
+          <h3>Jogo da Memória</h3>
+          <p>Encontre os pares!</p>
+          <div class="game-fp-bar" id="fp-bar-memoria">
+            <div class="fp-progress" style="width: 0%"></div>
+            <span class="fp-text">0 / 200 FP</span>
+          </div>
+          <div class="game-reward">5-15 FP</div>
+          <div class="game-plays" id="plays-memoria"></div>
+        </div>
+
+        <!-- Quiz Relâmpago -->
+        <div class="game-card" onclick="selectGame('quiz')">
+          <div class="game-level-badge" id="level-badge-quiz">
+            <span class="level-icon">⭐</span>
+            <span class="level-text">Nível 1</span>
+          </div>
+          <div class="game-icon">⚡</div>
+          <h3>Quiz Relâmpago</h3>
+          <p>Teste seus conhecimentos!</p>
+          <div class="game-fp-bar" id="fp-bar-quiz">
+            <div class="fp-progress" style="width: 0%"></div>
+            <span class="fp-text">0 / 200 FP</span>
+          </div>
+          <div class="game-reward">10-25 FP</div>
+          <div class="game-plays" id="plays-quiz"></div>
+        </div>
+
+        <!-- Caça ao Tesouro -->
+        <div class="game-card" onclick="selectGame('cacaotesouro')">
+          <div class="game-level-badge" id="level-badge-cacaotesouro">
+            <span class="level-icon">⭐</span>
+            <span class="level-text">Nível 1</span>
+          </div>
+          <div class="game-icon">🗺️</div>
+          <h3>Caça ao Tesouro</h3>
+          <p>Encontre tesouros escondidos!</p>
+          <div class="game-fp-bar" id="fp-bar-cacaotesouro">
+            <div class="fp-progress" style="width: 0%"></div>
+            <span class="fp-text">0 / 200 FP</span>
+          </div>
+          <div class="game-reward">8-20 FP</div>
+          <div class="game-plays" id="plays-cacaotesouro"></div>
+        </div>
+
+        <!-- Diário do Dia -->
+        <div class="game-card" onclick="selectGame('diario')">
+          <div class="game-level-badge" id="level-badge-diario">
+            <span class="level-icon">⭐</span>
+            <span class="level-text">Nível 1</span>
+          </div>
+          <div class="game-icon">📝</div>
+          <h3>Diário do Dia</h3>
+          <p>Escreva seus pensamentos</p>
+          <div class="game-fp-bar" id="fp-bar-diario">
+            <div class="fp-progress" style="width: 0%"></div>
+            <span class="fp-text">0 / 200 FP</span>
+          </div>
+          <div class="game-reward">20 FP</div>
+          <div class="game-plays" id="plays-diario"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Jogo da Memória -->
+    <section id="game-memoria" class="game-screen" style="display: none;">
+      <div class="game-header">
+        <button class="btn-back-game" onclick="backToSelection()">← Voltar</button>
+        <h2>🧠 Jogo da Memória</h2>
+        <div class="game-info">
+          <span>Erros: <strong id="memoria-errors">0</strong></span>
+          <span>Tempo: <strong id="memoria-time">00:00</strong></span>
+        </div>
+      </div>
+
+      <div class="difficulty-selector" id="memoria-difficulty">
+        <h3>Escolha a dificuldade:</h3>
+        <button onclick="startMemoryGame('facil')">😊 Fácil (8 pares)</button>
+        <button onclick="startMemoryGame('medio')">🤔 Médio (12 pares)</button>
+        <button onclick="startMemoryGame('dificil')">😎 Difícil (16 pares)</button>
+      </div>
+
+      <div id="memoria-board" class="memory-board"></div>
+    </section>
+
+    <!-- Quiz Relâmpago -->
+    <section id="game-quiz" class="game-screen" style="display: none;">
+      <div class="game-header">
+        <button class="btn-back-game" onclick="backToSelection()">← Voltar</button>
+        <h2>⚡ Quiz Relâmpago</h2>
+        <div class="game-info">
+          <span>Pergunta: <strong id="quiz-current">0</strong>/<strong id="quiz-total">0</strong></span>
+          <span>Tempo: <strong id="quiz-time">00:00</strong></span>
+        </div>
+      </div>
+
+      <div class="difficulty-selector" id="quiz-difficulty">
+        <h3>Escolha a dificuldade:</h3>
+        <button onclick="startQuiz('facil')">😊 Fácil (5 perguntas)</button>
+        <button onclick="startQuiz('medio')">🤔 Médio (8 perguntas)</button>
+        <button onclick="startQuiz('dificil')">😎 Difícil (10 perguntas)</button>
+      </div>
+
+      <div id="quiz-game" class="quiz-container"></div>
+    </section>
+
+    <!-- Caça ao Tesouro -->
+    <section id="game-cacaotesouro" class="game-screen" style="display: none;">
+      <div class="game-header">
+        <button class="btn-back-game" onclick="backToSelection()">← Voltar</button>
+        <h2>🗺️ Caça ao Tesouro</h2>
+        <div class="game-info">
+          <span>Encontrados: <strong id="treasure-found">0</strong>/<strong id="treasure-total">0</strong></span>
+          <span>Tempo: <strong id="treasure-time">00:00</strong></span>
+        </div>
+      </div>
+
+      <div class="difficulty-selector" id="treasure-difficulty">
+        <h3>Escolha a dificuldade:</h3>
+        <button onclick="startTreasureHunt('facil')">😊 Fácil (3 tesouros)</button>
+        <button onclick="startTreasureHunt('medio')">🤔 Médio (5 tesouros)</button>
+        <button onclick="startTreasureHunt('dificil')">😎 Difícil (7 tesouros)</button>
+      </div>
+
+      <div id="treasure-game" class="treasure-container"></div>
+    </section>
+
+    <!-- Diário do Dia -->
+    <section id="game-diario" class="game-screen" style="display: none;">
+      <div class="game-header">
+        <button class="btn-back-game" onclick="backToSelection()">← Voltar</button>
+        <h2>📝 Diário do Dia</h2>
+        <div class="game-info">
+          <span>Palavras: <strong id="diary-words">0</strong></span>
+        </div>
+      </div>
+
+      <div id="diary-game" class="diary-container">
+        <div class="diary-prompt" id="diary-prompt">Carregando...</div>
+        <textarea
+          id="diary-text"
+          class="diary-textarea"
+          placeholder="Escreva aqui seus pensamentos..."
+          oninput="updateWordCount()"
+        ></textarea>
+        <button class="btn-save-diary" onclick="saveDiary()">💾 Salvar Diário (+20 FP)</button>
+      </div>
+    </section>
+
+    <!-- Resultado -->
+    <div id="game-result" class="game-result" style="display: none;">
+      <div class="result-content">
+        <div class="result-icon">🎉</div>
+        <h2 id="result-title">Parabéns!</h2>
+        <p id="result-message"></p>
+        <div class="result-fp">
+          <span>+</span>
+          <span id="result-fp">0</span>
+          <span>FP</span>
+        </div>
+        <div class="result-stats" id="result-stats"></div>
+        <div class="result-achievements" id="result-achievements" style="display: none;"></div>
+        <button class="btn-play-again" onclick="playAgain()">🎮 Jogar Novamente</button>
+        <button class="btn-back-selection" onclick="backToSelection()">← Escolher Outro Jogo</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal de Level Up -->
+  <div id="levelup-modal" class="levelup-modal" style="display: none;">
+    <div class="levelup-content">
+      <div class="levelup-animation">
+        <div class="levelup-stars">✨⭐✨</div>
+        <div class="levelup-icon" id="levelup-icon">🎉</div>
+        <h2 class="levelup-title">LEVEL UP!</h2>
+        <div class="levelup-levels">
+          <span class="old-level" id="levelup-old">Nível 1</span>
+          <span class="levelup-arrow">→</span>
+          <span class="new-level" id="levelup-new">Nível 2</span>
+        </div>
+        <div class="levelup-game" id="levelup-game">Jogo da Memória</div>
+        <div class="levelup-bonus">
+          <span class="bonus-label">Bônus:</span>
+          <span class="bonus-value" id="levelup-bonus">+10 FP</span>
+        </div>
+        <div class="levelup-message" id="levelup-message">
+          O jogo ficou mais desafiador! Você está evoluindo! 🚀
+        </div>
+        <button class="btn-levelup-close" onclick="closeLevelUpModal()">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/minigames.js"></script>
+</body>
+</html>
