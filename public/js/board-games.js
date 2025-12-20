@@ -765,8 +765,851 @@ class CheckersGame {
   }
 }
 
-// Instância global
+// ================================================
+// JOGO DE XADREZ
+// ================================================
+
+class ChessGame {
+  constructor(containerId) {
+    this.containerId = containerId;
+    this.board = [];
+    this.selectedPiece = null;
+    this.currentPlayer = 'white'; // white ou black
+    this.gameMode = 'tutorial'; // tutorial, practice, vsAI
+    this.tutorialStep = 0;
+    this.aiDifficulty = 'easy';
+    this.moveHistory = [];
+    this.capturedPieces = { white: [], black: [] };
+    this.tutorialCompleted = localStorage.getItem('chess_tutorial') === 'true';
+    this.kingPositions = { white: { row: 7, col: 4 }, black: { row: 0, col: 4 } };
+    this.inCheck = { white: false, black: false };
+  }
+
+  init() {
+    if (!this.tutorialCompleted) {
+      this.startTutorial();
+    } else {
+      this.showModeSelection();
+    }
+  }
+
+  showModeSelection() {
+    const container = document.getElementById(this.containerId);
+    container.innerHTML = `
+      <div class="game-mode-selection">
+        <h2>♟️ Jogo de Xadrez</h2>
+        <p>Escolha como você quer jogar:</p>
+
+        <div class="mode-cards">
+          <div class="mode-card" onclick="chessGame.startMode('tutorial')">
+            <div class="mode-icon">📚</div>
+            <h3>Tutorial</h3>
+            <p>Aprenda do zero como jogar xadrez!</p>
+            <div class="mode-reward">+80 FP</div>
+          </div>
+
+          <div class="mode-card" onclick="chessGame.startMode('practice')">
+            <div class="mode-icon">🎯</div>
+            <h3>Treino</h3>
+            <p>Pratique contra IA fácil</p>
+            <div class="mode-reward">40-80 FP</div>
+          </div>
+
+          <div class="mode-card" onclick="chessGame.startMode('vsAI')">
+            <div class="mode-icon">🤖</div>
+            <h3>Desafio</h3>
+            <p>Jogue contra IA inteligente!</p>
+            <div class="mode-reward">80-150 FP</div>
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="backToGames()" style="margin-top: 20px;">
+          Voltar ←
+        </button>
+      </div>
+    `;
+  }
+
+  startMode(mode) {
+    this.gameMode = mode;
+    if (mode === 'tutorial') {
+      this.startTutorial();
+    } else {
+      this.initBoard();
+      this.render();
+      if (mode === 'vsAI' || mode === 'practice') {
+        this.aiDifficulty = mode === 'practice' ? 'easy' : 'medium';
+      }
+    }
+  }
+
+  startTutorial() {
+    this.tutorialStep = 0;
+    this.gameMode = 'tutorial';
+    this.showTutorialStep();
+  }
+
+  showTutorialStep() {
+    const container = document.getElementById(this.containerId);
+
+    const tutorialSteps = [
+      {
+        title: "Bem-vindo ao Xadrez! ♟️",
+        message: "O xadrez é o jogo dos reis! Vou te ensinar a jogar do zero. É um jogo de estratégia super divertido!",
+        image: "👑♟️",
+        action: "Começar Tutorial"
+      },
+      {
+        title: "O Tabuleiro 📋",
+        message: "O xadrez usa um tabuleiro 8x8, igual à dama. Cada jogador começa com 16 peças: você será as brancas ⚪ e eu serei as pretas ⚫. As brancas sempre jogam primeiro!",
+        image: "⬜⬛⬜⬛<br>⬛⬜⬛⬜<br>⬜⬛⬜⬛<br>⬛⬜⬛⬜",
+        action: "Entendi!"
+      },
+      {
+        title: "O Rei 👑",
+        message: "O REI é a peça mais importante! Ele move 1 casa em qualquer direção. Se seu rei for capturado, você perde! O objetivo é dar XEQUE-MATE no rei adversário.",
+        image: "👑",
+        action: "Legal!"
+      },
+      {
+        title: "A Rainha 💎",
+        message: "A RAINHA é a peça mais poderosa! Ela pode mover quantas casas quiser na horizontal, vertical ou diagonal. É muito importante protegê-la!",
+        image: "💎",
+        action: "Uau!"
+      },
+      {
+        title: "As Torres 🏰",
+        message: "As TORRES movem quantas casas quiserem, mas só na horizontal ou vertical (nunca na diagonal). Você tem 2 torres, uma em cada canto.",
+        image: "🏰",
+        action: "Entendi!"
+      },
+      {
+        title: "Os Bispos ⛪",
+        message: "Os BISPOS movem quantas casas quiserem, mas APENAS na diagonal. Você tem 2 bispos: um nas casas brancas e outro nas pretas.",
+        image: "⛪",
+        action: "Beleza!"
+      },
+      {
+        title: "Os Cavalos 🐴",
+        message: "Os CAVALOS são especiais! Eles movem em \"L\": 2 casas numa direção e 1 na outra. São as ÚNICAS peças que podem PULAR sobre outras!",
+        image: "🐴",
+        action: "Que legal!"
+      },
+      {
+        title: "Os Peões ⚔️",
+        message: "Os PEÕES são as menores peças. Movem 1 casa para frente (2 no primeiro movimento). Capturam na diagonal! Se chegarem do outro lado, viram RAINHA! 💎",
+        image: "⚔️",
+        action: "Entendi!"
+      },
+      {
+        title: "Xeque e Xeque-Mate ⚠️",
+        message: "XEQUE = Quando o rei está sob ataque.<br>XEQUE-MATE = Quando o rei está em xeque e não tem como escapar. Aí você VENCE! 🏆",
+        image: "⚠️👑",
+        action: "Agora faz sentido!"
+      },
+      {
+        title: "Como Ganhar 🏆",
+        message: "Você vence quando:<br>✅ Der XEQUE-MATE no rei adversário<br>✅ O adversário desistir<br><br>Agora você está pronto para jogar! 🎉",
+        image: "🏆",
+        action: "Vamos Jogar!"
+      }
+    ];
+
+    const step = tutorialSteps[this.tutorialStep];
+
+    container.innerHTML = `
+      <div class="tutorial-screen">
+        <div class="tutorial-header">
+          <span class="tutorial-progress">Passo ${this.tutorialStep + 1}/${tutorialSteps.length}</span>
+        </div>
+
+        <div class="tutorial-content">
+          <h2>${step.title}</h2>
+          <div class="tutorial-image">${step.image}</div>
+          <div class="tutorial-message">${step.message}</div>
+        </div>
+
+        <button class="btn-primary tutorial-btn" onclick="chessGame.nextTutorialStep()">
+          ${step.action}
+        </button>
+      </div>
+    `;
+  }
+
+  nextTutorialStep() {
+    this.tutorialStep++;
+
+    if (this.tutorialStep >= 10) {
+      // Tutorial completo
+      localStorage.setItem('chess_tutorial', 'true');
+      this.tutorialCompleted = true;
+      this.startPracticeMission();
+    } else {
+      this.showTutorialStep();
+    }
+  }
+
+  startPracticeMission() {
+    const container = document.getElementById(this.containerId);
+    container.innerHTML = `
+      <div class="tutorial-screen">
+        <div class="tutorial-content">
+          <h2>🎯 Missão Prática!</h2>
+          <div class="tutorial-image">💪</div>
+          <div class="tutorial-message">
+            Agora que você aprendeu as regras, vamos praticar!<br><br>
+            <strong>Missão:</strong> Jogue uma partida de treino e tente dar xeque-mate!
+          </div>
+        </div>
+
+        <button class="btn-primary tutorial-btn" onclick="chessGame.startMode('practice')">
+          Começar Treino! 🚀
+        </button>
+      </div>
+    `;
+  }
+
+  initBoard() {
+    // Criar tabuleiro 8x8 vazio
+    this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+
+    // Configurar peças pretas (linha 0 e 1)
+    const backRow = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+    for (let col = 0; col < 8; col++) {
+      this.board[0][col] = { type: backRow[col], player: 'black' };
+      this.board[1][col] = { type: 'pawn', player: 'black' };
+    }
+
+    // Configurar peças brancas (linha 6 e 7)
+    for (let col = 0; col < 8; col++) {
+      this.board[6][col] = { type: 'pawn', player: 'white' };
+      this.board[7][col] = { type: backRow[col], player: 'white' };
+    }
+
+    this.currentPlayer = 'white';
+    this.selectedPiece = null;
+    this.capturedPieces = { white: [], black: [] };
+    this.kingPositions = { white: { row: 7, col: 4 }, black: { row: 0, col: 4 } };
+    this.moveHistory = [];
+  }
+
+  getPieceIcon(piece) {
+    if (!piece) return '';
+
+    const icons = {
+      white: {
+        king: '♔',
+        queen: '♕',
+        rook: '♖',
+        bishop: '♗',
+        knight: '♘',
+        pawn: '♙'
+      },
+      black: {
+        king: '♚',
+        queen: '♛',
+        rook: '♜',
+        bishop: '♝',
+        knight: '♞',
+        pawn: '♟'
+      }
+    };
+
+    return icons[piece.player][piece.type];
+  }
+
+  render() {
+    const container = document.getElementById(this.containerId);
+
+    container.innerHTML = `
+      <div class="chess-game">
+        <div class="game-info">
+          <div class="player-info ${this.currentPlayer === 'black' ? 'active' : ''}">
+            <span class="player-icon">⚫</span>
+            <span class="player-name">IA</span>
+            <span class="player-score">${this.capturedPieces.white.length} capturadas</span>
+          </div>
+
+          <div class="game-status">
+            <div class="turn-indicator">
+              ${this.currentPlayer === 'white' ? 'Sua vez! ⚪' : 'IA pensando... 🤔'}
+            </div>
+            ${this.inCheck[this.currentPlayer] ? '<div class="check-warning">⚠️ XEQUE!</div>' : ''}
+          </div>
+
+          <div class="player-info ${this.currentPlayer === 'white' ? 'active' : ''}">
+            <span class="player-icon">⚪</span>
+            <span class="player-name">Você</span>
+            <span class="player-score">${this.capturedPieces.black.length} capturadas</span>
+          </div>
+        </div>
+
+        <div class="chess-board">
+          ${this.board.map((row, rowIndex) => `
+            <div class="board-row">
+              ${row.map((cell, colIndex) => {
+                const isLight = (rowIndex + colIndex) % 2 === 0;
+                const isSelected = this.selectedPiece &&
+                  this.selectedPiece.row === rowIndex &&
+                  this.selectedPiece.col === colIndex;
+                const validMoves = this.selectedPiece ?
+                  this.getValidMoves(this.selectedPiece.row, this.selectedPiece.col) : [];
+                const isValidMove = validMoves.some(m => m.row === rowIndex && m.col === colIndex);
+
+                return `
+                  <div class="board-cell ${isLight ? 'light' : 'dark'} ${isSelected ? 'selected' : ''} ${isValidMove ? 'valid-move' : ''}"
+                       onclick="chessGame.cellClick(${rowIndex}, ${colIndex})">
+                    ${cell ? `
+                      <div class="chess-piece ${cell.player}">
+                        ${this.getPieceIcon(cell)}
+                      </div>
+                    ` : ''}
+                    ${isValidMove ? '<div class="move-hint">•</div>' : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="captured-pieces">
+          <div class="captured-group">
+            <strong>Você capturou:</strong>
+            <div class="captured-list">
+              ${this.capturedPieces.black.map(p => this.getPieceIcon(p)).join(' ')}
+            </div>
+          </div>
+          <div class="captured-group">
+            <strong>IA capturou:</strong>
+            <div class="captured-list">
+              ${this.capturedPieces.white.map(p => this.getPieceIcon(p)).join(' ')}
+            </div>
+          </div>
+        </div>
+
+        <div class="game-actions">
+          <button class="btn-secondary" onclick="chessGame.showHelp()">💡 Dica</button>
+          <button class="btn-secondary" onclick="chessGame.showModeSelection()">Sair</button>
+        </div>
+      </div>
+    `;
+
+    this.addChessStyles();
+  }
+
+  cellClick(row, col) {
+    const cell = this.board[row][col];
+
+    // Se não tem peça selecionada
+    if (!this.selectedPiece) {
+      // Só pode selecionar peças do jogador atual
+      if (cell && cell.player === this.currentPlayer && this.currentPlayer === 'white') {
+        this.selectedPiece = { row, col };
+        this.render();
+      }
+    } else {
+      // Tem peça selecionada - tentar mover
+      const validMoves = this.getValidMoves(this.selectedPiece.row, this.selectedPiece.col);
+      const move = validMoves.find(m => m.row === row && m.col === col);
+
+      if (move) {
+        this.makeMove(this.selectedPiece.row, this.selectedPiece.col, row, col);
+        this.selectedPiece = null;
+
+        // Verificar xeque-mate
+        if (this.isCheckmate('black')) {
+          this.gameWon('white');
+          return;
+        }
+
+        // Trocar turno
+        this.currentPlayer = 'black';
+        this.render();
+
+        // IA joga
+        setTimeout(() => this.aiMove(), 1000);
+      } else {
+        // Clicou em lugar inválido - desselecionar
+        this.selectedPiece = null;
+        this.render();
+      }
+    }
+  }
+
+  getValidMoves(row, col) {
+    const piece = this.board[row][col];
+    if (!piece) return [];
+
+    let moves = [];
+
+    switch (piece.type) {
+      case 'pawn':
+        moves = this.getPawnMoves(row, col, piece);
+        break;
+      case 'rook':
+        moves = this.getRookMoves(row, col, piece);
+        break;
+      case 'knight':
+        moves = this.getKnightMoves(row, col, piece);
+        break;
+      case 'bishop':
+        moves = this.getBishopMoves(row, col, piece);
+        break;
+      case 'queen':
+        moves = this.getQueenMoves(row, col, piece);
+        break;
+      case 'king':
+        moves = this.getKingMoves(row, col, piece);
+        break;
+    }
+
+    // Filtrar movimentos que deixam o rei em xeque
+    return moves.filter(move => !this.wouldBeInCheck(row, col, move.row, move.col, piece.player));
+  }
+
+  getPawnMoves(row, col, piece) {
+    const moves = [];
+    const direction = piece.player === 'white' ? -1 : 1;
+    const startRow = piece.player === 'white' ? 6 : 1;
+
+    // Movimento para frente
+    const newRow = row + direction;
+    if (this.isValidPosition(newRow, col) && !this.board[newRow][col]) {
+      moves.push({ row: newRow, col });
+
+      // Movimento duplo na primeira jogada
+      if (row === startRow) {
+        const doubleRow = row + direction * 2;
+        if (!this.board[doubleRow][col]) {
+          moves.push({ row: doubleRow, col });
+        }
+      }
+    }
+
+    // Capturas diagonais
+    for (const dCol of [-1, 1]) {
+      const newCol = col + dCol;
+      if (this.isValidPosition(newRow, newCol)) {
+        const target = this.board[newRow][newCol];
+        if (target && target.player !== piece.player) {
+          moves.push({ row: newRow, col: newCol });
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  getRookMoves(row, col, piece) {
+    return this.getLineMoves(row, col, piece, [[0, 1], [0, -1], [1, 0], [-1, 0]]);
+  }
+
+  getBishopMoves(row, col, piece) {
+    return this.getLineMoves(row, col, piece, [[1, 1], [1, -1], [-1, 1], [-1, -1]]);
+  }
+
+  getQueenMoves(row, col, piece) {
+    return this.getLineMoves(row, col, piece, [
+      [0, 1], [0, -1], [1, 0], [-1, 0],
+      [1, 1], [1, -1], [-1, 1], [-1, -1]
+    ]);
+  }
+
+  getKnightMoves(row, col, piece) {
+    const moves = [];
+    const knightMoves = [
+      [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+      [1, -2], [1, 2], [2, -1], [2, 1]
+    ];
+
+    for (const [dRow, dCol] of knightMoves) {
+      const newRow = row + dRow;
+      const newCol = col + dCol;
+
+      if (this.isValidPosition(newRow, newCol)) {
+        const target = this.board[newRow][newCol];
+        if (!target || target.player !== piece.player) {
+          moves.push({ row: newRow, col: newCol });
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  getKingMoves(row, col, piece) {
+    const moves = [];
+    const directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [0, -1], [0, 1],
+      [1, -1], [1, 0], [1, 1]
+    ];
+
+    for (const [dRow, dCol] of directions) {
+      const newRow = row + dRow;
+      const newCol = col + dCol;
+
+      if (this.isValidPosition(newRow, newCol)) {
+        const target = this.board[newRow][newCol];
+        if (!target || target.player !== piece.player) {
+          moves.push({ row: newRow, col: newCol });
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  getLineMoves(row, col, piece, directions) {
+    const moves = [];
+
+    for (const [dRow, dCol] of directions) {
+      let newRow = row + dRow;
+      let newCol = col + dCol;
+
+      while (this.isValidPosition(newRow, newCol)) {
+        const target = this.board[newRow][newCol];
+
+        if (!target) {
+          moves.push({ row: newRow, col: newCol });
+        } else {
+          if (target.player !== piece.player) {
+            moves.push({ row: newRow, col: newCol });
+          }
+          break;
+        }
+
+        newRow += dRow;
+        newCol += dCol;
+      }
+    }
+
+    return moves;
+  }
+
+  isValidPosition(row, col) {
+    return row >= 0 && row < 8 && col >= 0 && col < 8;
+  }
+
+  wouldBeInCheck(fromRow, fromCol, toRow, toCol, player) {
+    // Simular o movimento
+    const originalPiece = this.board[fromRow][fromCol];
+    const capturedPiece = this.board[toRow][toCol];
+
+    this.board[toRow][toCol] = originalPiece;
+    this.board[fromRow][fromCol] = null;
+
+    // Atualizar posição do rei se necessário
+    let originalKingPos = null;
+    if (originalPiece.type === 'king') {
+      originalKingPos = { ...this.kingPositions[player] };
+      this.kingPositions[player] = { row: toRow, col: toCol };
+    }
+
+    // Verificar se está em xeque
+    const inCheck = this.isInCheck(player);
+
+    // Reverter movimento
+    this.board[fromRow][fromCol] = originalPiece;
+    this.board[toRow][toCol] = capturedPiece;
+
+    if (originalKingPos) {
+      this.kingPositions[player] = originalKingPos;
+    }
+
+    return inCheck;
+  }
+
+  isInCheck(player) {
+    const kingPos = this.kingPositions[player];
+    const opponent = player === 'white' ? 'black' : 'white';
+
+    // Verificar se alguma peça adversária pode capturar o rei
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece && piece.player === opponent) {
+          const moves = this.getValidMovesWithoutCheckTest(row, col, piece);
+          if (moves.some(m => m.row === kingPos.row && m.col === kingPos.col)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  getValidMovesWithoutCheckTest(row, col, piece) {
+    // Versão simplificada sem verificar xeque (para evitar recursão infinita)
+    switch (piece.type) {
+      case 'pawn': return this.getPawnMoves(row, col, piece);
+      case 'rook': return this.getRookMoves(row, col, piece);
+      case 'knight': return this.getKnightMoves(row, col, piece);
+      case 'bishop': return this.getBishopMoves(row, col, piece);
+      case 'queen': return this.getQueenMoves(row, col, piece);
+      case 'king': return this.getKingMoves(row, col, piece);
+      default: return [];
+    }
+  }
+
+  isCheckmate(player) {
+    if (!this.isInCheck(player)) return false;
+
+    // Verificar se há algum movimento válido
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece && piece.player === player) {
+          const moves = this.getValidMoves(row, col);
+          if (moves.length > 0) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  makeMove(fromRow, fromCol, toRow, toCol) {
+    const piece = this.board[fromRow][fromCol];
+    const captured = this.board[toRow][toCol];
+
+    // Capturar peça se houver
+    if (captured) {
+      this.capturedPieces[piece.player].push(captured);
+    }
+
+    // Mover peça
+    this.board[toRow][toCol] = piece;
+    this.board[fromRow][fromCol] = null;
+
+    // Atualizar posição do rei
+    if (piece.type === 'king') {
+      this.kingPositions[piece.player] = { row: toRow, col: toCol };
+    }
+
+    // Promoção de peão
+    if (piece.type === 'pawn' && (toRow === 0 || toRow === 7)) {
+      piece.type = 'queen'; // Promover automaticamente para rainha
+    }
+
+    // Atualizar estado de xeque
+    this.inCheck.white = this.isInCheck('white');
+    this.inCheck.black = this.isInCheck('black');
+
+    this.moveHistory.push({ fromRow, fromCol, toRow, toCol, captured });
+  }
+
+  aiMove() {
+    // IA simples: encontrar todas as jogadas válidas e escolher uma
+    const allMoves = [];
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece && piece.player === 'black') {
+          const moves = this.getValidMoves(row, col);
+          moves.forEach(move => {
+            allMoves.push({
+              fromRow: row,
+              fromCol: col,
+              toRow: move.row,
+              toCol: move.col,
+              piece: piece,
+              captures: this.board[move.row][move.col]
+            });
+          });
+        }
+      }
+    }
+
+    if (allMoves.length === 0) {
+      // IA sem movimentos - jogador venceu!
+      this.gameWon('white');
+      return;
+    }
+
+    // Priorizar capturas
+    const captureMoves = allMoves.filter(m => m.captures);
+    const selectedMoves = captureMoves.length > 0 ? captureMoves : allMoves;
+
+    // Escolher movimento aleatório
+    const move = selectedMoves[Math.floor(Math.random() * selectedMoves.length)];
+
+    this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
+
+    // Verificar xeque-mate
+    if (this.isCheckmate('white')) {
+      this.gameWon('black');
+      return;
+    }
+
+    this.currentPlayer = 'white';
+    this.render();
+  }
+
+  gameWon(winner) {
+    const isPlayerWin = winner === 'white';
+    const capturedValue = this.capturedPieces[winner].reduce((sum, p) => {
+      const values = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9 };
+      return sum + (values[p.type] || 0);
+    }, 0);
+    const fpEarned = isPlayerWin ? 80 + (capturedValue * 5) : 30;
+
+    setTimeout(() => {
+      const container = document.getElementById(this.containerId);
+      container.innerHTML = `
+        <div class="game-result">
+          <div class="result-emoji">${isPlayerWin ? '🏆' : '😅'}</div>
+          <h2>${isPlayerWin ? 'Xeque-Mate! Você Venceu!' : 'Xeque-Mate! A IA Venceu!'}</h2>
+          <p>${isPlayerWin ? 'Parabéns! Você é um mestre do xadrez!' : 'Não desista! O xadrez requer prática!'}</p>
+
+          <div class="result-stats">
+            <div class="result-stat">
+              <div class="result-stat-value">${this.capturedPieces[winner].length}</div>
+              <div class="result-stat-label">Peças Capturadas</div>
+            </div>
+            <div class="result-stat">
+              <div class="result-stat-value">${this.moveHistory.length}</div>
+              <div class="result-stat-label">Movimentos</div>
+            </div>
+            <div class="result-stat highlight">
+              <div class="result-stat-value">+${fpEarned} FP</div>
+              <div class="result-stat-label">Ganhos</div>
+            </div>
+          </div>
+
+          <div class="game-actions">
+            <button class="btn-primary" onclick="chessGame.saveAndExit(${fpEarned})">Finalizar ✅</button>
+            <button class="btn-secondary" onclick="chessGame.showModeSelection()">Jogar Novamente 🔄</button>
+          </div>
+        </div>
+      `;
+    }, 300);
+  }
+
+  showHelp() {
+    alert('💡 Dicas de Xadrez:\n\n✅ Proteja seu rei sempre!\n✅ Tente controlar o centro do tabuleiro\n✅ Desenvolva suas peças (tire-as da posição inicial)\n✅ Pense alguns movimentos à frente\n✅ A rainha é poderosa, mas não a perca cedo!');
+  }
+
+  async saveAndExit(fpEarned) {
+    try {
+      const currentChild = JSON.parse(localStorage.getItem('current_child') || '{}');
+      await fetch('/api/minigames/record', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+        },
+        body: JSON.stringify({
+          childId: currentChild.id,
+          gameKey: 'chess',
+          score: this.capturedPieces.white.length + this.capturedPieces.black.length,
+          fpEarned: fpEarned
+        })
+      });
+
+      backToGames();
+    } catch (error) {
+      console.error('Erro ao salvar jogo:', error);
+      backToGames();
+    }
+  }
+
+  addChessStyles() {
+    if (document.getElementById('chess-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'chess-styles';
+    style.textContent = `
+      .chess-board {
+        display: grid;
+        grid-template-rows: repeat(8, 1fr);
+        width: min(500px, 90vw);
+        height: min(500px, 90vw);
+        margin: 20px auto;
+        border: 4px solid #2c3e50;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      }
+
+      .chess-piece {
+        font-size: 2.5rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        user-select: none;
+      }
+
+      .board-cell:hover .chess-piece {
+        transform: scale(1.15);
+      }
+
+      .captured-pieces {
+        display: flex;
+        justify-content: space-around;
+        padding: 20px;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .captured-group {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        min-width: 200px;
+      }
+
+      .captured-group strong {
+        display: block;
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-size: 14px;
+      }
+
+      .captured-list {
+        font-size: 1.5rem;
+        min-height: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .check-warning {
+        background: #e74c3c;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: bold;
+        margin-top: 10px;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+
+      @media (max-width: 600px) {
+        .chess-piece {
+          font-size: 1.8rem;
+        }
+
+        .captured-pieces {
+          flex-direction: column;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+// Instâncias globais
 let checkersGame;
+let chessGame;
 
 function backToGames() {
   window.location.href = '/minigames.html';
