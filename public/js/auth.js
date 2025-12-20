@@ -119,3 +119,77 @@ function getAuthHeaders() {
     'Authorization': `Bearer ${authToken}`
   };
 }
+
+// ============================================
+// RECUPERAÇÃO DE SENHA
+// ============================================
+
+// Mostrar modal de recuperação de senha
+function showForgotPassword() {
+  const modal = document.getElementById('forgot-password-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.getElementById('forgot-email').value = '';
+    document.getElementById('forgot-error').textContent = '';
+    document.getElementById('forgot-success').style.display = 'none';
+  }
+}
+
+// Esconder modal de recuperação de senha
+function hideForgotPassword() {
+  const modal = document.getElementById('forgot-password-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Processar formulário de recuperação de senha
+document.getElementById('forgot-password-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById('forgot-email').value;
+  const errorEl = document.getElementById('forgot-error');
+  const successEl = document.getElementById('forgot-success');
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+
+  // Limpar mensagens anteriores
+  errorEl.textContent = '';
+  successEl.style.display = 'none';
+
+  // Desabilitar botão durante o envio
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando...';
+
+  try {
+    const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      errorEl.textContent = data.error || 'Erro ao enviar email';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar Link';
+      return;
+    }
+
+    // Mostrar mensagem de sucesso
+    successEl.textContent = data.message || 'Link de recuperação enviado! Verifique seu email.';
+    successEl.style.display = 'block';
+
+    // Fechar modal após 3 segundos
+    setTimeout(() => {
+      hideForgotPassword();
+    }, 3000);
+
+  } catch (error) {
+    console.error('Erro:', error);
+    errorEl.textContent = 'Erro de conexão. Tente novamente.';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar Link';
+  }
+});

@@ -178,6 +178,42 @@ if (fs.existsSync(fase23MigrationPath)) {
   }
 }
 
+// Executar migration Educação Financeira
+const financialMigrationPath = path.join(__dirname, 'database', 'migration-financial-education.sql');
+if (fs.existsSync(financialMigrationPath)) {
+  try {
+    const migrationSQL = fs.readFileSync(financialMigrationPath, 'utf8');
+    db.exec(migrationSQL);
+    console.log('✅ Migration Educação Financeira executada');
+  } catch (error) {
+    console.error('⚠️  Erro na migration Educação Financeira:', error.message);
+  }
+}
+
+// Executar migration Natureza e Meio Ambiente
+const natureMigrationPath = path.join(__dirname, 'database', 'migration-nature-education.sql');
+if (fs.existsSync(natureMigrationPath)) {
+  try {
+    const migrationSQL = fs.readFileSync(natureMigrationPath, 'utf8');
+    db.exec(migrationSQL);
+    console.log('✅ Migration Natureza e Meio Ambiente executada');
+  } catch (error) {
+    console.error('⚠️  Erro na migration Natureza:', error.message);
+  }
+}
+
+// Executar migration Higiene e Autocuidado
+const hygieneMigrationPath = path.join(__dirname, 'database', 'migration-hygiene-education.sql');
+if (fs.existsSync(hygieneMigrationPath)) {
+  try {
+    const migrationSQL = fs.readFileSync(hygieneMigrationPath, 'utf8');
+    db.exec(migrationSQL);
+    console.log('✅ Migration Higiene e Autocuidado executada');
+  } catch (error) {
+    console.error('⚠️  Erro na migration Higiene:', error.message);
+  }
+}
+
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -258,6 +294,97 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Recuperar senha
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email é obrigatório' });
+    }
+
+    // Verificar se o email existe
+    const family = db.prepare('SELECT id, email FROM families WHERE email = ?').get(email);
+
+    // Por segurança, sempre retornar sucesso mesmo que o email não exista
+    // Isso evita que atacantes descubram quais emails estão cadastrados
+    if (!family) {
+      return res.json({
+        success: true,
+        message: 'Se o email estiver cadastrado, você receberá um link de recuperação.'
+      });
+    }
+
+    // Gerar token de recuperação (válido por 1 hora)
+    const resetToken = jwt.sign(
+      { familyId: family.id, type: 'password-reset' },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // TODO: Enviar email com link de recuperação
+    // const resetLink = `${process.env.APP_URL}/reset-password?token=${resetToken}`;
+    // await sendEmail(family.email, 'Recuperação de senha', resetLink);
+
+    // Por enquanto, apenas registrar no console (desenvolvimento)
+    console.log(`Token de recuperação para ${email}: ${resetToken}`);
+    console.log(`Link de recuperação: /reset-password?token=${resetToken}`);
+
+    res.json({
+      success: true,
+      message: 'Se o email estiver cadastrado, você receberá um link de recuperação.',
+      // Apenas para desenvolvimento - remover em produção
+      ...(process.env.NODE_ENV === 'development' && { resetToken })
+    });
+
+  } catch (error) {
+    console.error('Erro ao processar recuperação de senha:', error);
+    res.status(500).json({ error: 'Erro ao processar solicitação' });
+  }
+});
+
+// Redefinir senha
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Token e nova senha são obrigatórios' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres' });
+    }
+
+    // Verificar token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.type !== 'password-reset') {
+        return res.status(400).json({ error: 'Token inválido' });
+      }
+    } catch (error) {
+      return res.status(400).json({ error: 'Token inválido ou expirado' });
+    }
+
+    // Hash da nova senha
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    // Atualizar senha
+    db.prepare('UPDATE families SET password_hash = ? WHERE id = ?')
+      .run(passwordHash, decoded.familyId);
+
+    res.json({
+      success: true,
+      message: 'Senha redefinida com sucesso! Você já pode fazer login.'
+    });
+
+  } catch (error) {
+    console.error('Erro ao redefinir senha:', error);
+    res.status(500).json({ error: 'Erro ao redefinir senha' });
+  }
+});
+
 // Middleware de autenticação
 function authenticate(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -267,12 +394,37 @@ function authenticate(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.familyId = decoded.familyId;
+    req.familyId = decoded.familyId; // Manter compatibilidade com código existente
+    req.user = { familyId: decoded.familyId }; // Novo formato para módulos educacionais
     next();
   } catch (error) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 }
+
+// ============================================
+// MÓDULOS EDUCACIONAIS (Financeiro, Natureza, Higiene)
+// ============================================
+
+// Importar e configurar rotas dos módulos educacionais
+const setupEducationRoutes = require('./education-modules-routes');
+setupEducationRoutes(app, db, authenticate);
+
+// ============================================
+// CHATBOT LOCAL (Ollama)
+// ============================================
+
+// Importar e configurar rotas do chatbot
+const setupChatbotRoutes = require('./chatbot-routes');
+setupChatbotRoutes(app, db, authenticate);
+
+// ============================================
+// STRIPE PAYMENT INTEGRATION
+// ============================================
+
+// Importar e configurar rotas do Stripe
+const setupStripeRoutes = require('./stripe-routes');
+setupStripeRoutes(app, db, authenticate);
 
 // ============================================
 // CRIANÇAS

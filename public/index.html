@@ -35,6 +35,9 @@
           <input type="password" id="login-password" placeholder="Senha" required>
           <button type="submit" class="btn-primary">Entrar</button>
           <p class="error-message" id="login-error"></p>
+          <p style="text-align: center; margin-top: 12px;">
+            <a href="#" onclick="showForgotPassword(); return false;" style="color: #667eea; text-decoration: none; font-size: 14px;">Esqueci minha senha</a>
+          </p>
         </form>
 
         <!-- Register Form -->
@@ -95,6 +98,23 @@
           <div class="modal-actions">
             <button type="submit" class="btn-primary">Criar Perfil</button>
             <button type="button" onclick="hideCreateChild()" class="btn-secondary">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Recuperar Senha -->
+    <div id="forgot-password-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>🔑 Recuperar Senha</h2>
+        <p style="color: #7F8C8D; margin-bottom: 20px;">Digite seu email e enviaremos um link para redefinir sua senha.</p>
+        <form id="forgot-password-form">
+          <input type="email" id="forgot-email" placeholder="Seu email" required>
+          <p class="error-message" id="forgot-error"></p>
+          <p class="success-message" id="forgot-success" style="display: none; color: #27ae60; text-align: center; margin: 10px 0;"></p>
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary">Enviar Link</button>
+            <button type="button" onclick="hideForgotPassword()" class="btn-secondary">Cancelar</button>
           </div>
         </form>
       </div>
