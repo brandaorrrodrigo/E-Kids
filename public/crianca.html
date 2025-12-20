@@ -322,6 +322,47 @@
     </div>
   </div>
 
+  <!-- Chatbot Lu Container (inicialmente escondido) -->
+  <div id="chatbot-container" style="
+    position: fixed;
+    bottom: 120px;
+    right: 24px;
+    z-index: 9998;
+    display: none;
+  "></div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/audio-manager.js"></script>
+  <script src="/js/chatbot.js"></script>
   <script src="/js/child.js"></script>
+  <script>
+    // Inicializar chatbot Lu quando a página carregar
+    let chatbot;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Aguardar child.js carregar os dados da criança
+      setTimeout(() => {
+        const currentChild = JSON.parse(localStorage.getItem('current_child') || '{}');
+        const token = localStorage.getItem('ekids_token');
+
+        if (currentChild.id && token) {
+          // Criar instância do chatbot
+          chatbot = new Chatbot(API_URL || '', token, currentChild.id);
+
+          // Renderizar botão flutuante "Fale com a Lu"
+          chatbot.renderFloatingButton('chatbot-button-container');
+
+          // Renderizar interface do chat (inicialmente oculta)
+          chatbot.render('chatbot-container');
+
+          // Esconder o chat inicialmente
+          const chatContainer = document.getElementById('chat-container');
+          if (chatContainer) {
+            chatContainer.style.display = 'none';
+          }
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
