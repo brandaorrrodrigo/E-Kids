@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogos de Tabuleiro - E-Kids PRO</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #b58863 0%, #f0d9b5 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .game-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .game-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .game-title h1 {
+      margin: 0;
+      font-size: 36px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .game-title p {
+      margin: 10px 0 0 0;
+      opacity: 0.8;
+    }
+
+    #game-area {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      min-height: 400px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7F8C8D;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #ecf0f1;
+      border-top-color: #b58863;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-title">
+      <h1 id="game-title">⚫⚪ Jogo de Dama</h1>
+      <p id="game-subtitle">Aprenda e jogue dama!</p>
+    </div>
+
+    <div id="game-area">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando jogo...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/board-games.js"></script>
+  <script>
+    // Detectar qual jogo carregar pela URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameName = urlParams.get('game');
+
+    const gameTitles = {
+      checkers: {
+        title: '⚫⚪ Jogo de Dama',
+        subtitle: 'Aprenda e jogue dama!'
+      },
+      chess: {
+        title: '♟️ Xadrez',
+        subtitle: 'O jogo dos reis!'
+      }
+    };
+
+    if (gameName && gameTitles[gameName]) {
+      document.getElementById('game-title').textContent = gameTitles[gameName].title;
+      document.getElementById('game-subtitle').textContent = gameTitles[gameName].subtitle;
+
+      // Verificar autenticação
+      const token = localStorage.getItem('ekids_token');
+      if (!token) {
+        window.location.href = '/';
+      } else {
+        // Iniciar o jogo
+        setTimeout(() => {
+          if (gameName === 'checkers') {
+            checkersGame = new CheckersGame('game-area');
+            checkersGame.init();
+          } else if (gameName === 'chess') {
+            alert('Xadrez em breve! 🎉');
+            window.location.href = '/minigames.html';
+          }
+        }, 500);
+      }
+    } else {
+      // Jogo não especificado ou inválido
+      document.getElementById('game-area').innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <h2>😕 Jogo não encontrado</h2>
+          <p>Por favor, selecione um jogo válido.</p>
+          <button class="btn-primary" onclick="window.location.href='/minigames.html'" style="padding: 14px 30px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">
+            Voltar aos Jogos
+          </button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
