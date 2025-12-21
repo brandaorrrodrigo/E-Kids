@@ -22,17 +22,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadChildData() {
   try {
-    const childId = localStorage.getItem('currentChildId');
-    if (!childId) {
-      alert('Nenhuma criança selecionada!');
-      window.location.href = '/crianca.html';
+    const childData = localStorage.getItem('current_child');
+    const token = localStorage.getItem('ekids_token');
+
+    console.log('=== DEPURAÇÃO MINIGAMES ===');
+    console.log('Child data existe:', !!childData);
+    console.log('Token existe:', !!token);
+    console.log('Token:', token ? token.substring(0, 20) + '...' : 'NENHUM');
+
+    if (!childData) {
+      alert('Nenhuma criança selecionada! Por favor, selecione uma criança primeiro.');
+      window.location.href = '/';
       return;
     }
 
-    currentChild = { id: parseInt(childId) };
+    if (!token) {
+      alert('Sessão expirada! Por favor, faça login novamente.');
+      window.location.href = '/';
+      return;
+    }
+
+    currentChild = JSON.parse(childData);
+    console.log('Criança carregada:', currentChild.name, 'ID:', currentChild.id);
 
     // Buscar FP balance
-    const response = await fetch(`/api/children/${childId}`);
+    const response = await fetch(`/api/children/${currentChild.id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -45,7 +59,9 @@ async function loadChildData() {
 
 async function loadDailyProgress() {
   try {
-    const response = await fetch(`/api/minigames/daily-progress/${currentChild.id}`);
+    const response = await fetch(`/api/minigames/daily-progress/${currentChild.id}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('ekids_token')}` }
+    });
     const data = await response.json();
 
     if (data.success && data.progress.length > 0) {
@@ -316,9 +332,14 @@ async function startMemoryGame(difficulty) {
 
   // Buscar dados do jogo
   try {
+    console.log('Iniciando jogo da memória...', { childId: currentChild.id, difficulty });
+
     const response = await fetch('/api/minigames/start', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+      },
       body: JSON.stringify({
         childId: currentChild.id,
         gameKey: 'memoria',
@@ -326,9 +347,12 @@ async function startMemoryGame(difficulty) {
       })
     });
 
+    console.log('Resposta da API:', response.status);
     const data = await response.json();
+    console.log('Dados recebidos:', data);
 
     if (!data.success) {
+      console.error('Erro ao iniciar jogo:', data);
       alert(data.message || 'Erro ao iniciar jogo');
       backToSelection();
       return;
@@ -459,9 +483,14 @@ async function startQuiz(difficulty) {
   document.getElementById('quiz-difficulty').style.display = 'none';
 
   try {
+    console.log('Iniciando quiz...', { childId: currentChild.id, difficulty });
+
     const response = await fetch('/api/minigames/start', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+      },
       body: JSON.stringify({
         childId: currentChild.id,
         gameKey: 'quiz',
@@ -469,9 +498,12 @@ async function startQuiz(difficulty) {
       })
     });
 
+    console.log('Resposta da API (quiz):', response.status);
     const data = await response.json();
+    console.log('Dados recebidos (quiz):', data);
 
     if (!data.success) {
+      console.error('Erro ao iniciar quiz:', data);
       alert(data.message || 'Erro ao iniciar quiz');
       backToSelection();
       return;
@@ -581,9 +613,14 @@ async function startTreasureHunt(difficulty) {
   document.getElementById('treasure-difficulty').style.display = 'none';
 
   try {
+    console.log('Iniciando caça ao tesouro...', { childId: currentChild.id, difficulty });
+
     const response = await fetch('/api/minigames/start', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+      },
       body: JSON.stringify({
         childId: currentChild.id,
         gameKey: 'cacaotesouro',
@@ -591,9 +628,12 @@ async function startTreasureHunt(difficulty) {
       })
     });
 
+    console.log('Resposta da API (caça ao tesouro):', response.status);
     const data = await response.json();
+    console.log('Dados recebidos (caça ao tesouro):', data);
 
     if (!data.success) {
+      console.error('Erro ao iniciar caça ao tesouro:', data);
       alert(data.message || 'Erro ao iniciar caça ao tesouro');
       backToSelection();
       return;
@@ -686,7 +726,10 @@ async function startDiary() {
   try {
     const response = await fetch('/api/minigames/start', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+      },
       body: JSON.stringify({
         childId: currentChild.id,
         gameKey: 'diario',
@@ -760,7 +803,10 @@ async function recordGamePlay(gameKey, score, timeSeconds, completed, gameDataEx
     // Registrar no sistema de mini-games
     const minigameResponse = await fetch('/api/minigames/record', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('ekids_token')}`
+      },
       body: JSON.stringify({
         childId: currentChild.id,
         gameKey,

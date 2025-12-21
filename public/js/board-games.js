@@ -39,21 +39,21 @@ class CheckersGame {
             <div class="mode-icon">📚</div>
             <h3>Tutorial</h3>
             <p>Aprenda do zero como jogar dama!</p>
-            <div class="mode-reward">+50 FP</div>
+            <div class="mode-reward">Aprenda Grátis</div>
           </div>
 
           <div class="mode-card" onclick="checkersGame.startMode('practice')">
             <div class="mode-icon">🎯</div>
             <h3>Treino</h3>
             <p>Pratique contra IA fácil</p>
-            <div class="mode-reward">30-60 FP</div>
+            <div class="mode-reward">+5 FP</div>
           </div>
 
           <div class="mode-card" onclick="checkersGame.startMode('vsAI')">
             <div class="mode-icon">🤖</div>
             <h3>Desafio</h3>
             <p>Jogue contra IA inteligente!</p>
-            <div class="mode-reward">60-120 FP</div>
+            <div class="mode-reward">+10 FP</div>
           </div>
         </div>
 
@@ -429,7 +429,9 @@ class CheckersGame {
   gameWon(winner) {
     const isPlayerWin = winner === 'red';
     const capturedPieces = 12 - this.score[winner === 'red' ? 'black' : 'red'];
-    const fpEarned = isPlayerWin ? 60 + (capturedPieces * 5) : 20;
+    // FP fixo por dificuldade da IA: easy=5, medium=10, hard=15
+    const fpByDifficulty = { 'easy': 5, 'medium': 10, 'hard': 15 };
+    const fpEarned = isPlayerWin ? (fpByDifficulty[this.aiDifficulty] || 10) : 0;
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);
@@ -805,21 +807,21 @@ class ChessGame {
             <div class="mode-icon">📚</div>
             <h3>Tutorial</h3>
             <p>Aprenda do zero como jogar xadrez!</p>
-            <div class="mode-reward">+80 FP</div>
+            <div class="mode-reward">Aprenda Grátis</div>
           </div>
 
           <div class="mode-card" onclick="chessGame.startMode('practice')">
             <div class="mode-icon">🎯</div>
             <h3>Treino</h3>
             <p>Pratique contra IA fácil</p>
-            <div class="mode-reward">40-80 FP</div>
+            <div class="mode-reward">+5 FP</div>
           </div>
 
           <div class="mode-card" onclick="chessGame.startMode('vsAI')">
             <div class="mode-icon">🤖</div>
             <h3>Desafio</h3>
             <p>Jogue contra IA inteligente!</p>
-            <div class="mode-reward">80-150 FP</div>
+            <div class="mode-reward">+10 FP</div>
           </div>
         </div>
 
@@ -1452,11 +1454,9 @@ class ChessGame {
 
   gameWon(winner) {
     const isPlayerWin = winner === 'white';
-    const capturedValue = this.capturedPieces[winner].reduce((sum, p) => {
-      const values = { pawn: 1, knight: 3, bishop: 3, rook: 5, queen: 9 };
-      return sum + (values[p.type] || 0);
-    }, 0);
-    const fpEarned = isPlayerWin ? 80 + (capturedValue * 5) : 30;
+    // FP fixo por dificuldade da IA: easy=5, medium=10, hard=15
+    const fpByDifficulty = { 'easy': 5, 'medium': 10, 'hard': 15 };
+    const fpEarned = isPlayerWin ? (fpByDifficulty[this.aiDifficulty] || 10) : 0;
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);

@@ -187,35 +187,15 @@ function recordPlay(db, playData) {
 function calculateFpReward(game, score, timeSeconds, completed, difficulty) {
   if (!completed) return 0;
 
-  let baseFp = game.fp_reward_min;
-  const maxFp = game.fp_reward_max;
+  // Sistema simplificado: FP fixo por dificuldade
+  const fpByDifficulty = {
+    'facil': 5,
+    'medio': 10,
+    'dificil': 15,
+    'livre': 5
+  };
 
-  // Multiplicador de dificuldade
-  const difficultyMultiplier = {
-    'facil': 1.0,
-    'medio': 1.3,
-    'dificil': 1.6,
-    'livre': 1.0
-  }[difficulty] || 1.0;
-
-  // FP baseado em score (0-100)
-  const scorePercentage = Math.min(score, 100) / 100;
-  let fpFromScore = baseFp + ((maxFp - baseFp) * scorePercentage);
-
-  // Aplicar multiplicador de dificuldade
-  fpFromScore *= difficultyMultiplier;
-
-  // Bônus por velocidade (se completou rápido)
-  if (timeSeconds > 0 && timeSeconds < 60) {
-    const speedBonus = Math.floor((60 - timeSeconds) / 10); // +1 FP a cada 10s economizado
-    fpFromScore += speedBonus;
-  }
-
-  // Arredondar e garantir limites
-  return Math.max(
-    game.fp_reward_min,
-    Math.min(Math.round(fpFromScore), maxFp * 2) // Até 2x o máximo com bônus
-  );
+  return fpByDifficulty[difficulty] || 5;
 }
 
 /**

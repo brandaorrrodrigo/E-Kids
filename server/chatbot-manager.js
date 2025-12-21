@@ -186,10 +186,10 @@ Você está ajudando ${childData.name} com dúvidas sobre lições.
     } catch (error) {
       console.error('Erro no chat:', error);
 
-      // Fallback para resposta padrão
+      // Fallback para resposta padrão (passa a mensagem do usuário para respostas mais contextuais)
       return {
         conversationId: conversationId || 0,
-        message: this.getFallbackResponse(contextType),
+        message: this.getFallbackResponse(contextType, message),
         tokens: 0,
         responseTime: Date.now() - startTime,
         error: true
@@ -228,34 +228,118 @@ Você está ajudando ${childData.name} com dúvidas sobre lições.
   }
 
   /**
-   * Respostas fallback caso Ollama não esteja disponível
+   * Respostas fallback inteligentes baseadas em palavras-chave
    */
-  getFallbackResponse(contextType) {
-    const responses = {
+  getFallbackResponse(contextType, userMessage = '') {
+    const messageLower = userMessage.toLowerCase();
+
+    // Respostas baseadas em palavras-chave
+    const keywordResponses = {
+      // Perguntas sobre aprendizado
+      'aprender|aprendi|estudar|escola|lição': [
+        "Aprender coisas novas é super legal! 📚 O que você descobriu de interessante?",
+        "Uau! Adoro quando você aprende coisas novas! Me conta mais! ✨",
+        "Cada coisa que você aprende te deixa mais incrível! 🌟",
+        "Aprender é como ganhar superpoderes! 💪 Continue assim!"
+      ],
+      // Perguntas sobre o dia
+      'dia|hoje|ontem|manhã|tarde|noite': [
+        "Que legal! Como foi seu dia? Conta tudo! 😊",
+        "Espero que seu dia tenha sido incrível! O que você fez de legal? 🌟",
+        "Adoro saber sobre seu dia! Me conta mais detalhes! 💜",
+        "Todo dia é uma nova aventura! Como foi a sua? 🚀"
+      ],
+      // Perguntas sobre segurança/perigo
+      'perigo|perigoso|medo|assustador|machucar': [
+        "Muito bem em querer saber! 🛡️ É importante conhecer o que pode ser perigoso para se proteger!",
+        "Que inteligente você é! Saber sobre perigos ajuda a gente se cuidar melhor! 💪",
+        "Ótima pergunta! Quando a gente conhece os perigos, fica mais seguro! 🌟",
+        "Legal você perguntar! Conhecer os perigos é o primeiro passo para se proteger! 👏"
+      ],
+      // Sentimentos
+      'feliz|alegre|triste|chateado|bravo|nervoso': [
+        "Seus sentimentos são super importantes! 💜 Como você está se sentindo?",
+        "É muito bom falar sobre como a gente se sente! Me conta mais! 🤗",
+        "Todos os sentimentos são válidos! Quer conversar sobre isso? 💭",
+        "Que bom que você compartilha seus sentimentos comigo! 😊"
+      ],
+      // Família
+      'pai|mãe|irmão|irmã|família|vovó|vovô': [
+        "A família é muito especial! 👨‍👩‍👧 Como está todo mundo aí?",
+        "Que legal! A família da gente é muito importante! 💜",
+        "Adoro quando você fala da sua família! São pessoas muito especiais! ✨",
+        "Família é tudo de bom! Me conta mais sobre eles! 🏡"
+      ],
+      // Dúvidas/perguntas
+      'porque|como|o que|quando|onde|quem': [
+        "Que pergunta legal! 🤔 Adoro quando você tem curiosidade!",
+        "Boa pergunta! A curiosidade te faz aprender muito! 💡",
+        "Uau, que curioso você é! Isso é muito bom! 🌟",
+        "Fazer perguntas é ser inteligente! Continue perguntando! 📚"
+      ],
+      // Agradecimento
+      'obrigado|obrigada|valeu|brigado': [
+        "Por nada! Estou sempre aqui para você! 💜",
+        "Fico feliz em ajudar! Conte comigo sempre! 🤗",
+        "De nada! É um prazer te ajudar! ✨",
+        "Imagina! Adoro conversar com você! 😊"
+      ],
+      // Cumprimentos
+      'oi|olá|e aí|opa': [
+        "Oi! Que bom te ver! 👋💜 Como você está?",
+        "Olá! Estava esperando você! 😊 Como posso te ajudar?",
+        "E aí! Tudo bem? Vamos conversar! ✨",
+        "Oi! Que legal você estar aqui! 🌟"
+      ]
+    };
+
+    // Verificar palavras-chave
+    for (const [keywords, responses] of Object.entries(keywordResponses)) {
+      const regex = new RegExp(keywords, 'i');
+      if (regex.test(messageLower)) {
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+    }
+
+    // Respostas gerais por contexto
+    const contextResponses = {
       general: [
-        "Oi! Eu sou a Lu e estou aqui para te ajudar! 😊💜",
-        "Que legal! Me conta mais sobre isso!",
-        "Você está indo muito bem! Continue assim! 🌟"
+        "Interessante! Me conta mais sobre isso! 😊",
+        "Que legal! Continue me contando! 💜",
+        "Uau! Você tem ideias incríveis! 🌟",
+        "Adoro conversar com você! Me fala mais! ✨",
+        "Que bacana! Quero saber mais detalhes! 🤗",
+        "Você é muito esperto! Continue assim! 💡",
+        "Que demais! Adorei isso! 🚀",
+        "Muito bem! Você está indo ótimo! 👏",
+        "Que história legal! Me conta mais! 📚",
+        "Incrível! Você sempre me surpreende! ⭐"
       ],
       financial: [
         "Guardar FP é como plantar sementes! 🌱 Um dia vira uma árvore grande!",
         "Que legal que você quer poupar! Isso mostra que você é inteligente! 💡",
-        "Vamos criar uma meta juntos? O que você quer conseguir?"
+        "Vamos criar uma meta juntos? O que você quer conseguir?",
+        "Economizar é um superpoder! Você está indo muito bem! 💪",
+        "Cada FP guardado te deixa mais perto do seu sonho! 🌟"
       ],
       nature: [
         "As plantas e animais precisam de cuidado, assim como você! 🌱",
         "Cuidar da natureza é um superpoder! 🦸‍♂️",
-        "Você sabia que as plantas sentem quando cuidamos delas?"
+        "Você sabia que as plantas sentem quando cuidamos delas?",
+        "A natureza é incrível! O que você mais gosta nela? 🌍",
+        "Proteger a natureza é proteger nosso futuro! 🌳"
       ],
       hygiene: [
         "Cuidar do corpo é cuidar de você mesmo! 🧼",
         "Seus dentes vão agradecer! Continue assim! 😁",
-        "Que legal! Você está criando hábitos de campeão! 💪"
+        "Que legal! Você está criando hábitos de campeão! 💪",
+        "Higiene é saúde! Você está fazendo tudo certo! ✨",
+        "Parabéns por cuidar tão bem de você! 🌟"
       ]
     };
 
-    const contextResponses = responses[contextType] || responses.general;
-    return contextResponses[Math.floor(Math.random() * contextResponses.length)];
+    const responses = contextResponses[contextType] || contextResponses.general;
+    return responses[Math.floor(Math.random() * responses.length)];
   }
 
   // ============================================
@@ -321,28 +405,28 @@ Você está ajudando ${childData.name} com dúvidas sobre lições.
   getSuggestions(contextType, childData) {
     const suggestions = {
       general: [
-        "Como foi seu dia?",
-        "O que você aprendeu hoje?",
-        "Quer uma dica legal?",
-        "Me conta uma coisa legal!"
+        "Foi legal! 😊",
+        "Aprendi coisas novas!",
+        "Quero uma dica!",
+        "Me ajuda com algo"
       ],
       financial: [
-        "Por que guardar FP?",
-        "Como criar uma meta?",
+        "Quero guardar FP!",
+        "Como faço uma meta?",
         "Quanto devo poupar?",
-        "O que posso comprar com FP?"
+        "O que posso comprar?"
       ],
       nature: [
-        "Como cuidar de plantas?",
-        "Por que respeitar animais?",
-        "Como ajudar o planeta?",
-        "O que fazer com lixo?"
+        "Como cuido de plantas?",
+        "Vi um animal hoje!",
+        "Quero ajudar o planeta",
+        "O que faço com lixo?"
       ],
       hygiene: [
         "Por que lavar as mãos?",
-        "Como escovar os dentes?",
-        "Por que tomar banho?",
-        "Quando trocar de roupa?"
+        "Como escovo os dentes?",
+        "Já tomei banho!",
+        "Quando troco de roupa?"
       ]
     };
 
@@ -358,11 +442,11 @@ Você está ajudando ${childData.name} com dúvidas sobre lições.
    */
   getWelcomeMessage(childName, contextType) {
     const welcomes = {
-      general: `Oi ${childName}! 👋 Eu sou a Lu, sua assistente! Como posso te ajudar hoje? 💜`,
-      financial: `E aí ${childName}! 💰 Sou a Lu! Vamos falar sobre como guardar seus FP?`,
-      nature: `Olá ${childName}! 🌱 Eu sou a Lu! Preparado para aprender sobre a natureza?`,
-      hygiene: `Oi ${childName}! 🧼 Sou a Lu! Vamos criar hábitos incríveis juntos?`,
-      tutor: `Olá ${childName}! 📚 Eu sou a Lu e estou aqui para te ajudar a aprender!`
+      general: `Oi ${childName}! 👋 Eu sou a Lu, sua assistente! Como foi seu dia hoje? Me conta tudo! 💜`,
+      financial: `E aí ${childName}! 💰 Sou a Lu! O que você aprendeu sobre dinheiro hoje? Conseguiu guardar alguns FP?`,
+      nature: `Olá ${childName}! 🌱 Eu sou a Lu! Viu algum animal ou planta interessante hoje? Me conta!`,
+      hygiene: `Oi ${childName}! 🧼 Sou a Lu! Já escovou os dentinhos hoje? Como está sua rotina de cuidados?`,
+      tutor: `Olá ${childName}! 📚 Eu sou a Lu! O que você está aprendendo de legal na escola hoje?`
     };
 
     return welcomes[contextType] || welcomes.general;

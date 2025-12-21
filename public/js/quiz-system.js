@@ -121,14 +121,9 @@ class QuizSystem {
     // Destacar resposta correta
     buttons[selectedIndex].classList.add('correct');
 
-    // Calcular FP baseado em tentativas
-    let fpEarned = 20;
-    if (this.attempts === 1) fpEarned = 30; // Acertou de primeira!
-    else if (this.attempts === 2) fpEarned = 25; // Segunda tentativa
-    else fpEarned = 20; // Terceira tentativa ou mais
-
-    // Adicionar bônus por nível
-    fpEarned += (currentQuestion.level - 1) * 5;
+    // FP fixo por nível da pergunta: Nível 1=Fácil(1), 2=Médio(2), 3+=Difícil(3)
+    const fpByLevel = { 1: 1, 2: 2 };
+    const fpEarned = currentQuestion.level >= 3 ? 3 : (fpByLevel[currentQuestion.level] || 1);
 
     // Atualizar contador de FP
     const fpCounter = document.getElementById('quiz-fp-earned');

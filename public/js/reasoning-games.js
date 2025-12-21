@@ -167,10 +167,8 @@ class MemoryGame {
     clearInterval(this.timerInterval);
     const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
 
-    // Calcular FP baseado em performance
-    let fpEarned = 50;
-    if (this.moves <= this.cards.length / 2 + 2) fpEarned = 100; // Quase perfeito
-    else if (this.moves <= this.cards.length) fpEarned = 75; // Bom
+    // FP fixo: 8 pares = Dificuldade média = 10 FP
+    const fpEarned = 10;
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);
@@ -369,7 +367,8 @@ class PatternGame {
     document.getElementById('pattern-message').innerHTML =
       '<span style="color: #e74c3c;">Ops! Sequência errada!</span>';
 
-    const fpEarned = this.score;
+    // FP fixo por nível alcançado: <5=Fácil(5), 5-10=Médio(10), >10=Difícil(15)
+    const fpEarned = this.level > 10 ? 15 : (this.level >= 5 ? 10 : 5);
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);
@@ -583,7 +582,8 @@ class LogicGame {
   }
 
   showResults() {
-    const fpEarned = this.score * 20;
+    // FP fixo por pontuação: <5=Fácil(5), 5-10=Médio(10), >10=Difícil(15)
+    const fpEarned = this.score > 10 ? 15 : (this.score >= 5 ? 10 : 5);
     const container = document.getElementById(this.containerId);
 
     container.innerHTML = `

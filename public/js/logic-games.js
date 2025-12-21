@@ -272,9 +272,9 @@ class SudokuGame {
   }
 
   gameWon() {
-    const fpRewards = { 3: 20, 4: 40, 6: 60 };
-    const fpEarned = fpRewards[this.size] - (this.mistakes * 2);
-    const finalFP = Math.max(10, fpEarned);
+    // FP fixo por dificuldade: 3x3=Fácil(5), 4x4=Médio(10), 6x6=Difícil(15)
+    const fpRewards = { 3: 5, 4: 10, 6: 15 };
+    const finalFP = fpRewards[this.size] || 5;
 
     const container = document.getElementById(this.containerId);
     container.innerHTML = `
@@ -641,10 +641,9 @@ class HanoiGame {
   }
 
   gameWon() {
-    const efficiency = this.minMoves / this.moves;
-    const baseFP = this.numDisks * 10;
-    const bonus = efficiency >= 1 ? 20 : (efficiency >= 0.8 ? 10 : 0);
-    const fpEarned = baseFP + bonus;
+    // FP fixo por dificuldade: 3 discos=Fácil(5), 4=Médio(10), 5+=Difícil(15)
+    const fpRewards = { 3: 5, 4: 10 };
+    const fpEarned = this.numDisks >= 5 ? 15 : (fpRewards[this.numDisks] || 5);
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);
@@ -1090,8 +1089,9 @@ class MinesweeperGame {
 
   gameWon() {
     this.gameOver = true;
-    const fpRewards = { 5: 30, 10: 50, 15: 80 };
-    const fpEarned = fpRewards[this.mines] || 50;
+    // FP fixo por dificuldade: 5 minas=Fácil(5), 10=Médio(10), 15=Difícil(15)
+    const fpRewards = { 5: 5, 10: 10, 15: 15 };
+    const fpEarned = fpRewards[this.mines] || 5;
 
     const container = document.getElementById(this.containerId);
     container.innerHTML = `
@@ -1388,7 +1388,8 @@ class Game2048 {
     }
 
     const maxTile = Math.max(...this.board.flat());
-    const fpEarned = Math.floor(Math.log2(maxTile) * 5);
+    // FP fixo por desempenho: <256=Fácil(5), 256-1023=Médio(10), >=1024=Difícil(15)
+    const fpEarned = maxTile >= 1024 ? 15 : (maxTile >= 256 ? 10 : 5);
 
     setTimeout(() => {
       const container = document.getElementById(this.containerId);
@@ -1748,8 +1749,9 @@ class SlidingPuzzleGame {
   }
 
   gameWon() {
-    const fpRewards = { 3: 25, 4: 45, 5: 70 };
-    const fpEarned = fpRewards[this.size];
+    // FP fixo por dificuldade: 3x3=Fácil(5), 4x4=Médio(10), 5x5=Difícil(15)
+    const fpRewards = { 3: 5, 4: 10, 5: 15 };
+    const fpEarned = fpRewards[this.size] || 5;
 
     const container = document.getElementById(this.containerId);
     container.innerHTML = `
