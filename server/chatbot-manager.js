@@ -8,7 +8,7 @@ class ChatbotManager {
   constructor(db, ollamaUrl = 'http://localhost:11434') {
     this.db = db;
     this.ollamaUrl = ollamaUrl;
-    this.model = 'llama3.2:3b'; // Modelo padrão
+    this.model = 'llama3.2:latest'; // Modelo padrão (3.2B)
 
     // Inicializar tabelas
     this.initializeTables();
