@@ -1537,6 +1537,34 @@ class ChessGame {
         box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       }
 
+      .board-cell {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .board-cell.light {
+        background: #f0d9b5;
+      }
+
+      .board-cell.dark {
+        background: #b58863;
+      }
+
+      .board-cell.selected {
+        background: #7fc97f !important;
+        box-shadow: inset 0 0 0 3px #27ae60;
+      }
+
+      .board-cell.valid-move {
+        background: #ffffcc !important;
+        cursor: pointer;
+      }
+
       .chess-piece {
         font-size: 2.5rem;
         cursor: pointer;
