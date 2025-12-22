@@ -10,7 +10,7 @@ class AudioManager {
     this.isPaused = false;
     this.voiceSettings = {
       rate: 0.9,      // Velocidade (0.1 a 10)
-      pitch: 1.1,     // Tom (0 a 2)
+      pitch: 1.3,     // Tom mais alto para voz feminina doce (0 a 2)
       volume: 1.0,    // Volume (0 a 1)
       lang: 'pt-BR'   // Idioma
     };
@@ -35,23 +35,43 @@ class AudioManager {
   loadVoices() {
     this.voices = this.synth.getVoices();
 
-    // Tentar encontrar voz em português do Brasil
-    const ptBRVoice = this.voices.find(voice =>
+    // Priorizar voz FEMININA em português do Brasil
+    // Nomes comuns de vozes femininas: Maria, Luciana, Francisca (excluída), etc.
+    const femaleVoiceNames = ['maria', 'luciana', 'vitoria', 'camila', 'female', 'mulher'];
+    const excludedNames = ['francisca']; // Vozes a evitar
+
+    // Filtrar vozes pt-BR
+    const ptBRVoices = this.voices.filter(voice =>
       voice.lang === 'pt-BR' || voice.lang === 'pt_BR'
     );
 
-    if (ptBRVoice) {
-      this.selectedVoice = ptBRVoice;
-    } else {
-      // Fallback para qualquer voz em português
-      const ptVoice = this.voices.find(voice =>
-        voice.lang.startsWith('pt')
-      );
-      this.selectedVoice = ptVoice || this.voices[0];
+    // Procurar voz feminina pt-BR (excluindo Francisca)
+    let selectedVoice = ptBRVoices.find(voice => {
+      const nameLower = voice.name.toLowerCase();
+      return femaleVoiceNames.some(fem => nameLower.includes(fem)) &&
+             !excludedNames.some(excl => nameLower.includes(excl));
+    });
+
+    // Se não encontrou feminina pt-BR, pegar qualquer pt-BR
+    if (!selectedVoice && ptBRVoices.length > 0) {
+      selectedVoice = ptBRVoices[0];
     }
 
-    console.log('Vozes disponíveis:', this.voices.length);
-    console.log('Voz selecionada:', this.selectedVoice?.name);
+    // Fallback para português genérico
+    if (!selectedVoice) {
+      const ptVoices = this.voices.filter(voice => voice.lang.startsWith('pt'));
+      selectedVoice = ptVoices.find(voice => {
+        const nameLower = voice.name.toLowerCase();
+        return femaleVoiceNames.some(fem => nameLower.includes(fem)) &&
+               !excludedNames.some(excl => nameLower.includes(excl));
+      }) || ptVoices[0];
+    }
+
+    this.selectedVoice = selectedVoice || this.voices[0];
+
+    console.log('🎤 Vozes disponíveis:', this.voices.length);
+    console.log('🎤 Voz selecionada:', this.selectedVoice?.name);
+    console.log('🎤 Vozes pt-BR encontradas:', ptBRVoices.map(v => v.name).join(', '));
   }
 
   getAvailableVoices(lang = 'pt') {
@@ -160,13 +180,13 @@ class AudioManager {
    * Narra mensagem do chatbot
    */
   speakChatMessage(message, context = 'general') {
-    // Vozes diferentes por contexto
+    // Vozes diferentes por contexto - tom feminino doce e meigo
     const contextSettings = {
-      general: { rate: 0.9, pitch: 1.1 },
-      financial: { rate: 0.85, pitch: 1.0 },
-      nature: { rate: 0.9, pitch: 1.15 },
-      hygiene: { rate: 0.9, pitch: 1.1 },
-      tutor: { rate: 0.85, pitch: 1.0 }
+      general: { rate: 0.9, pitch: 1.3 },
+      financial: { rate: 0.85, pitch: 1.25 },
+      nature: { rate: 0.9, pitch: 1.35 },
+      hygiene: { rate: 0.9, pitch: 1.3 },
+      tutor: { rate: 0.85, pitch: 1.25 }
     };
 
     this.speak(message, contextSettings[context] || contextSettings.general);
