@@ -19,7 +19,7 @@ if (!fs.existsSync(TMP_DIR)) {
  */
 router.post('/speak', async (req, res) => {
   try {
-    const { text, voice = 'default' } = req.body;
+    const { text, voice = 'pt-BR-LeticiaNeural' } = req.body;
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({ error: 'Texto não fornecido' });
@@ -45,10 +45,9 @@ router.post('/speak', async (req, res) => {
     const filename = `tts_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.mp3`;
     const outputPath = path.join(TMP_DIR, filename);
 
-    // Usar Edge TTS (voz feminina pt-BR de alta qualidade)
-    const voiceName = voice || 'pt-BR-LeticiaNeural'; // Leticia: curiosa e alegre
-    const scriptPath = path.join(__dirname, '..', 'tts-models', 'edge-tts-generate.py');
-    const command = `python "${scriptPath}" "${cleanText.replace(/"/g, '\\"')}" "${outputPath}" "${voiceName}"`;
+    // Usar Google TTS (voz feminina pt-BR natural)
+    const scriptPath = path.join(__dirname, '..', 'tts-models', 'gtts-generate.py');
+    const command = `python "${scriptPath}" "${cleanText.replace(/"/g, '\\"')}" "${outputPath}"`;
 
     exec(command, { timeout: 30000 }, (error, stdout, stderr) => {
       if (error) {
