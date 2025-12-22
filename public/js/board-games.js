@@ -1527,6 +1527,7 @@ class ChessGame {
       .chess-board {
         display: grid;
         grid-template-rows: repeat(8, 1fr);
+        grid-template-columns: repeat(8, 1fr);
         width: min(500px, 90vw);
         height: min(500px, 90vw);
         margin: 20px auto;
