@@ -42,13 +42,15 @@ router.post('/speak', async (req, res) => {
     }
 
     // Gerar nome de arquivo único
-    const filename = `tts_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.wav`;
+    const filename = `tts_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.mp3`;
     const outputPath = path.join(TMP_DIR, filename);
 
-    // Executar Piper
-    const command = `echo "${cleanText.replace(/"/g, '\\"')}" | piper --model "${PIPER_MODEL}" --output_file "${outputPath}"`;
+    // Usar Edge TTS (voz feminina pt-BR de alta qualidade)
+    const voiceName = voice || 'pt-BR-LeticiaNeural'; // Leticia: curiosa e alegre
+    const scriptPath = path.join(__dirname, '..', 'tts-models', 'edge-tts-generate.py');
+    const command = `python "${scriptPath}" "${cleanText.replace(/"/g, '\\"')}" "${outputPath}" "${voiceName}"`;
 
-    exec(command, { cwd: path.dirname(PIPER_MODEL) }, (error, stdout, stderr) => {
+    exec(command, { timeout: 30000 }, (error, stdout, stderr) => {
       if (error) {
         console.error('Erro no Piper TTS:', error);
         console.error('stderr:', stderr);
