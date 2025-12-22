@@ -1651,6 +1651,98 @@ class ChessGame {
         transform: translateY(0);
       }
 
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .game-mode-selection {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .game-mode-selection h2 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .game-mode-selection > p {
+        color: #7F8C8D;
+        margin-bottom: 30px;
+      }
+
+      .mode-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .mode-card {
+        background: white;
+        padding: 30px 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 3px solid transparent;
+      }
+
+      .mode-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        border-color: #667eea;
+      }
+
+      .mode-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+
+      .mode-card h3 {
+        color: #2c3e50;
+        margin: 0 0 10px 0;
+      }
+
+      .mode-card p {
+        color: #7F8C8D;
+        font-size: 14px;
+        margin: 0 0 15px 0;
+      }
+
+      .mode-reward {
+        background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .tutorial-btn {
+        width: 100%;
+        max-width: 300px;
+        padding: 18px;
+        font-size: 18px;
+      }
+
       @media (max-width: 600px) {
         .chess-piece {
           font-size: 1.8rem;
@@ -1658,6 +1750,10 @@ class ChessGame {
 
         .captured-pieces {
           flex-direction: column;
+        }
+
+        .mode-cards {
+          grid-template-columns: 1fr;
         }
       }
     `;
