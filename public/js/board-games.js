@@ -1047,31 +1047,29 @@ class ChessGame {
         </div>
 
         <div class="chess-board">
-          ${this.board.map((row, rowIndex) => `
-            <div class="board-row">
-              ${row.map((cell, colIndex) => {
-                const isLight = (rowIndex + colIndex) % 2 === 0;
-                const isSelected = this.selectedPiece &&
-                  this.selectedPiece.row === rowIndex &&
-                  this.selectedPiece.col === colIndex;
-                const validMoves = this.selectedPiece ?
-                  this.getValidMoves(this.selectedPiece.row, this.selectedPiece.col) : [];
-                const isValidMove = validMoves.some(m => m.row === rowIndex && m.col === colIndex);
+          ${this.board.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              const isLight = (rowIndex + colIndex) % 2 === 0;
+              const isSelected = this.selectedPiece &&
+                this.selectedPiece.row === rowIndex &&
+                this.selectedPiece.col === colIndex;
+              const validMoves = this.selectedPiece ?
+                this.getValidMoves(this.selectedPiece.row, this.selectedPiece.col) : [];
+              const isValidMove = validMoves.some(m => m.row === rowIndex && m.col === colIndex);
 
-                return `
-                  <div class="board-cell ${isLight ? 'light' : 'dark'} ${isSelected ? 'selected' : ''} ${isValidMove ? 'valid-move' : ''}"
-                       onclick="chessGame.cellClick(${rowIndex}, ${colIndex})">
-                    ${cell ? `
-                      <div class="chess-piece ${cell.player}">
-                        ${this.getPieceIcon(cell)}
-                      </div>
-                    ` : ''}
-                    ${isValidMove ? '<div class="move-hint">•</div>' : ''}
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          `).join('')}
+              return `
+                <div class="board-cell ${isLight ? 'light' : 'dark'} ${isSelected ? 'selected' : ''} ${isValidMove ? 'valid-move' : ''}"
+                     onclick="chessGame.cellClick(${rowIndex}, ${colIndex})">
+                  ${cell ? `
+                    <div class="chess-piece ${cell.player}">
+                      ${this.getPieceIcon(cell)}
+                    </div>
+                  ` : ''}
+                  ${isValidMove ? '<div class="move-hint">•</div>' : ''}
+                </div>
+              `;
+            }).join('')
+          ).flat().join('')}
         </div>
 
         <div class="captured-pieces">
@@ -1620,6 +1618,37 @@ class ChessGame {
       @keyframes pulse {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
+      }
+
+      .game-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+
+      .btn-secondary:active {
+        transform: translateY(0);
       }
 
       @media (max-width: 600px) {
