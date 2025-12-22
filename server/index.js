@@ -427,6 +427,13 @@ const setupStripeRoutes = require('./stripe-routes');
 setupStripeRoutes(app, db, authenticate);
 
 // ============================================
+// TEXT-TO-SPEECH (Piper TTS)
+// ============================================
+
+const ttsRoutes = require('./tts-routes');
+app.use('/api/tts', ttsRoutes);
+
+// ============================================
 // CRIANÇAS
 // ============================================
 

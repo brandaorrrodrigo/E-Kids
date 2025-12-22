@@ -6,8 +6,10 @@ class AudioManager {
   constructor() {
     this.synth = window.speechSynthesis;
     this.currentUtterance = null;
+    this.currentAudio = null;
     this.isPlaying = false;
     this.isPaused = false;
+    this.useTTSAPI = true; // Usar API TTS em vez de Web Speech
     this.voiceSettings = {
       rate: 0.9,      // Velocidade (0.1 a 10)
       pitch: 1.3,     // Tom mais alto para voz feminina doce (0 a 2)
@@ -18,13 +20,28 @@ class AudioManager {
     // Carregar preferências do localStorage
     this.loadSettings();
 
-    // Esperar vozes carregarem
+    // Esperar vozes carregarem (fallback Web Speech)
     this.voices = [];
     this.loadVoices();
 
     // Event listener para quando vozes estiverem disponíveis
     if (this.synth.onvoiceschanged !== undefined) {
       this.synth.onvoiceschanged = () => this.loadVoices();
+    }
+
+    // Verificar se API TTS está disponível
+    this.checkTTSAPI();
+  }
+
+  async checkTTSAPI() {
+    try {
+      const response = await fetch('/api/tts/status');
+      const data = await response.json();
+      this.useTTSAPI = data.status === 'online';
+      console.log('🎤 TTS API Status:', this.useTTSAPI ? 'Online (Piper)' : 'Offline (Web Speech fallback)');
+    } catch (error) {
+      this.useTTSAPI = false;
+      console.log('🎤 TTS API não disponível, usando Web Speech API');
     }
   }
 
@@ -95,15 +112,86 @@ class AudioManager {
    * @param {string} text - Texto para falar
    * @param {object} options - Opções adicionais
    */
-  speak(text, options = {}) {
+  async speak(text, options = {}) {
     // Cancelar qualquer fala anterior
     this.stop();
 
     // Limpar emojis e caracteres especiais
     const cleanText = this.cleanText(text);
 
+    // Usar API TTS (Piper) se disponível
+    if (this.useTTSAPI) {
+      try {
+        await this.speakWithAPI(cleanText, options);
+        return;
+      } catch (error) {
+        console.warn('Erro na API TTS, usando fallback Web Speech:', error);
+        this.useTTSAPI = false; // Desabilitar para próximas chamadas
+      }
+    }
+
+    // Fallback: Web Speech API
+    this.speakWithWebSpeech(cleanText, options);
+  }
+
+  /**
+   * Fala usando API TTS (Piper)
+   */
+  async speakWithAPI(text, options = {}) {
+    const response = await fetch('/api/tts/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+
+    if (!response.ok) {
+      throw new Error(`TTS API error: ${response.status}`);
+    }
+
+    // Receber áudio como blob
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    // Criar elemento de áudio
+    this.currentAudio = new Audio(audioUrl);
+    this.currentAudio.volume = options.volume || this.voiceSettings.volume;
+
+    // Event listeners
+    this.currentAudio.onplay = () => {
+      this.isPlaying = true;
+      this.isPaused = false;
+      if (options.onStart) options.onStart();
+    };
+
+    this.currentAudio.onended = () => {
+      this.isPlaying = false;
+      this.isPaused = false;
+      URL.revokeObjectURL(audioUrl); // Limpar memória
+      if (options.onEnd) options.onEnd();
+    };
+
+    this.currentAudio.onerror = (event) => {
+      console.error('Erro no áudio:', event);
+      this.isPlaying = false;
+      URL.revokeObjectURL(audioUrl);
+      if (options.onError) options.onError(event);
+    };
+
+    this.currentAudio.onpause = () => {
+      this.isPaused = true;
+      if (options.onPause) options.onPause();
+    };
+
+    // Reproduzir
+    await this.currentAudio.play();
+  }
+
+  /**
+   * Fala usando Web Speech API (fallback)
+   */
+  speakWithWebSpeech(text, options = {}) {
     // Criar utterance
-    this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
+    this.currentUtterance = new SpeechSynthesisUtterance(text);
 
     // Aplicar configurações
     this.currentUtterance.voice = this.selectedVoice;
@@ -150,7 +238,11 @@ class AudioManager {
    */
   pause() {
     if (this.isPlaying && !this.isPaused) {
-      this.synth.pause();
+      if (this.currentAudio) {
+        this.currentAudio.pause();
+      } else {
+        this.synth.pause();
+      }
     }
   }
 
@@ -159,7 +251,11 @@ class AudioManager {
    */
   resume() {
     if (this.isPlaying && this.isPaused) {
-      this.synth.resume();
+      if (this.currentAudio) {
+        this.currentAudio.play();
+      } else {
+        this.synth.resume();
+      }
     }
   }
 
@@ -167,6 +263,11 @@ class AudioManager {
    * Para a fala
    */
   stop() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
+    }
     this.synth.cancel();
     this.isPlaying = false;
     this.isPaused = false;
