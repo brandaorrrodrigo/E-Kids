@@ -1047,7 +1047,7 @@ class ChessGame {
         </div>
 
         <div class="chess-board">
-          ${this.board.map((row, rowIndex) =>
+          ${this.board.flatMap((row, rowIndex) =>
             row.map((cell, colIndex) => {
               const isLight = (rowIndex + colIndex) % 2 === 0;
               const isSelected = this.selectedPiece &&
@@ -1068,8 +1068,8 @@ class ChessGame {
                   ${isValidMove ? '<div class="move-hint">•</div>' : ''}
                 </div>
               `;
-            }).join('')
-          ).flat().join('')}
+            })
+          ).join('')}
         </div>
 
         <div class="captured-pieces">
