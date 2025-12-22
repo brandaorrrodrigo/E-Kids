@@ -1528,21 +1528,24 @@ class ChessGame {
         grid-template-columns: repeat(8, 1fr);
         width: min(500px, 90vw);
         height: min(500px, 90vw);
+        aspect-ratio: 1;
         margin: 20px auto;
         border: 4px solid #2c3e50;
         border-radius: 8px;
-        overflow: hidden;
         box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 5;
       }
 
       .board-cell {
-        aspect-ratio: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
         cursor: pointer;
         transition: background 0.2s;
+        min-width: 0;
+        min-height: 0;
       }
 
       .board-cell.light {
@@ -1629,22 +1632,24 @@ class ChessGame {
       }
 
       .btn-secondary {
-        background: #6c757d;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        background: #6c757d !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.3s !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        position: relative !important;
+        z-index: 10 !important;
       }
 
       .btn-secondary:hover {
-        background: #5a6268;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        background: #5a6268 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
       }
 
       .btn-secondary:active {
@@ -1693,6 +1698,8 @@ class ChessGame {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         margin-bottom: 20px;
+        position: relative;
+        z-index: 10;
       }
 
       .mode-card {
@@ -1703,6 +1710,8 @@ class ChessGame {
         cursor: pointer;
         transition: all 0.3s;
         border: 3px solid transparent;
+        position: relative;
+        z-index: 10;
       }
 
       .mode-card:hover {
@@ -1741,6 +1750,11 @@ class ChessGame {
         max-width: 300px;
         padding: 18px;
         font-size: 18px;
+      }
+
+      .game-mode-selection {
+        position: relative;
+        z-index: 10;
       }
 
       @media (max-width: 600px) {
