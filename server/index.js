@@ -414,9 +414,9 @@ setupEducationRoutes(app, db, authenticate);
 // CHATBOT LOCAL (Ollama)
 // ============================================
 
-// Importar e configurar rotas do chatbot
-const setupChatbotRoutes = require('./chatbot-routes');
-setupChatbotRoutes(app, db, authenticate);
+// Importar e configurar rotas do chatbot (via proxy para servidor isolado)
+const setupChatProxyRoutes = require('./chat-proxy-routes');
+setupChatProxyRoutes(app, db, authenticate);
 
 // ============================================
 // STRIPE PAYMENT INTEGRATION
@@ -429,9 +429,11 @@ setupStripeRoutes(app, db, authenticate);
 // ============================================
 // TEXT-TO-SPEECH (Piper TTS)
 // ============================================
+// NOTA: TTS agora está no servidor de chat isolado (server-chat/)
+// O servidor principal não precisa mais dessas rotas
 
-const ttsRoutes = require('./tts-routes');
-app.use('/api/tts', ttsRoutes);
+// const ttsRoutes = require('./tts-routes');
+// app.use('/api/tts', ttsRoutes);
 
 // ============================================
 // CRIANÇAS
