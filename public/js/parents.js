@@ -1,5 +1,8 @@
 // E-KIDS PRO MVP - Área dos Pais
 
+// Constante para ícone da moeda FP
+const FP_ICON = '<img src="/images/moedafp1.png" alt="FP" style="width: 20px; height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" />';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!checkAuth()) {
     window.location.href = '/';
@@ -70,7 +73,7 @@ async function renderChildrenProgress(children) {
         <div class="avatar">${avatarEmoji}</div>
         <div class="info">
           <h3>${child.name}</h3>
-          <p>⭐ ${child.total_fp} FP | ${child.total_activities} atividades completadas</p>
+          <p>${FP_ICON} ${child.total_fp} FP | ${child.total_activities} atividades completadas</p>
         </div>
       </div>
       <div class="modules-progress">

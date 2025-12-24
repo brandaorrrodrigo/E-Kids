@@ -171,25 +171,28 @@ class ChatProxy {
   getSuggestions(contextType = 'general') {
     const suggestions = {
       general: [
-        "Como foi seu dia?",
-        "O que você aprendeu hoje?",
-        "Quer jogar algo?",
-        "Me conta uma curiosidade!"
+        "Quero fazer uma missão!",
+        "Me conta uma história",
+        "Ensina algo legal",
+        "Vamos jogar?"
       ],
       financial: [
-        "Como posso guardar FP?",
-        "Para que serve o FP?",
-        "Quero economizar!"
+        "Como ganho mais FP?",
+        "O que posso comprar?",
+        "Quero guardar FP!",
+        "Me ajuda a economizar"
       ],
       nature: [
-        "Como cuidar de plantas?",
-        "Me fala sobre animais!",
-        "O que é meio ambiente?"
+        "Me fala sobre animais",
+        "Quero cuidar de plantas",
+        "Como proteger a natureza?",
+        "Me conta sobre o planeta"
       ],
       hygiene: [
+        "Como escovo os dentes?",
         "Por que lavar as mãos?",
-        "Como escovar os dentes?",
-        "O que é higiene?"
+        "Preciso tomar banho?",
+        "Me ensina sobre higiene"
       ]
     };
 

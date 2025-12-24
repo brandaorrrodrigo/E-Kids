@@ -1,5 +1,8 @@
 // E-KIDS PRO MVP - Gerenciador de Módulos
 
+// Constante para ícone da moeda FP
+const FP_ICON = '<img src="/images/moedafp1.png" alt="FP" style="width: 20px; height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" />';
+
 let currentChild = null;
 let currentModule = null;
 
@@ -80,10 +83,10 @@ async function completeActivity(activityName, fpEarned) {
           localStorage.setItem(`mission_completed_${currentChild.id}_${today}`, 'true');
 
           // Feedback especial para missão do dia
-          showFeedback(`🎯 Missão do dia completa! Você ganhou ${fpEarned} FP! ⭐`, 'success');
+          showFeedback(`🎯 Missão do dia completa! Você ganhou ${fpEarned} FP! ${FP_ICON}`, 'success');
         } else {
           // Feedback normal
-          showFeedback(`Muito bem! Você ganhou ${fpEarned} FP! ⭐`, 'success');
+          showFeedback(`Muito bem! Você ganhou ${fpEarned} FP! ${FP_ICON}`, 'success');
         }
       } else {
         // Feedback normal

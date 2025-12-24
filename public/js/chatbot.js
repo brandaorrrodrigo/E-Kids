@@ -161,35 +161,35 @@ class Chatbot {
    * Renderiza botão flutuante do chat
    */
   renderFloatingButton(containerId) {
-    const container = document.getElementById(containerId);
+    let container = document.getElementById(containerId);
+
+    // Se não houver container especificado, criar na raiz do body
     if (!container) {
-      // Criar na raiz do body
-      const btn = document.createElement('div');
-      btn.id = 'chat-floating-btn';
-      btn.onclick = () => this.toggleChat();
-      btn.style.cssText = `
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        width: 90px;
-        height: 90px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 36px;
-        cursor: pointer;
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-        z-index: 9999;
-        transition: transform 0.3s;
-        animation: pulse 2s infinite;
-      `;
-      btn.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><div style="font-size: 32px;">👧</div><div style="font-size: 10px; font-weight: bold; color: white;">Fale com a Lu</div></div>';
-      btn.onmouseenter = () => btn.style.transform = 'scale(1.1)';
-      btn.onmouseleave = () => btn.style.transform = 'scale(1)';
-      document.body.appendChild(btn);
+      container = document.body;
     }
+
+    // Criar botão flutuante
+    const btn = document.createElement('div');
+    btn.id = 'chat-floating-btn';
+    btn.onclick = () => this.toggleChat();
+    btn.style.cssText = `
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+      transition: transform 0.3s;
+      animation: pulse 2s infinite;
+    `;
+    btn.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><div style="font-size: 32px;">👧</div><div style="font-size: 10px; font-weight: bold; color: white;">Fale com a Lu</div></div>';
+    btn.onmouseenter = () => btn.style.transform = 'scale(1.1)';
+    btn.onmouseleave = () => btn.style.transform = 'scale(1)';
+    container.appendChild(btn);
   }
 
   toggleChat() {
@@ -217,6 +217,8 @@ class Chatbot {
 
     if (!message || this.isTyping) return;
 
+    console.log('💬 Enviando mensagem:', message);
+
     // Limpar input
     input.value = '';
 
@@ -227,8 +229,13 @@ class Chatbot {
     this.showTypingIndicator();
 
     try {
+      const url = `${this.apiUrl}/api/chat`;
+      console.log('📡 URL da API:', url);
+      console.log('👤 Child ID:', this.childId);
+      console.log('🔑 Token:', this.token ? 'Presente' : 'Ausente');
+
       // Enviar para API
-      const response = await fetch(`${this.apiUrl}/api/chat`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,7 +249,9 @@ class Chatbot {
         })
       });
 
+      console.log('📥 Response status:', response.status);
       const data = await response.json();
+      console.log('📥 Response data:', data);
 
       // Remover typing indicator
       this.hideTypingIndicator();
@@ -258,10 +267,13 @@ class Chatbot {
 
         // Recarregar sugestões
         await this.loadSuggestions();
+      } else {
+        console.error('❌ Erro na resposta:', data.error);
+        this.addMessage('assistant', `Ops! ${data.error || 'Erro desconhecido'} 😅`);
       }
 
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      console.error('❌ Erro ao enviar mensagem:', error);
       this.hideTypingIndicator();
       this.addMessage('assistant', 'Ops! A Lu teve um probleminha. Tenta de novo? 😅');
     }

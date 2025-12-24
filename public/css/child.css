@@ -86,10 +86,35 @@ body.child-interface {
   align-items: center;
   gap: 6px;
   box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.fp-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+  pointer-events: none;
 }
 
 .fp-icon {
-  font-size: 1.3rem;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  animation: coinSpin 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.4));
+}
+
+@keyframes coinSpin {
+  0%, 100% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
 }
 
 .btn-switch-child {
@@ -911,9 +936,12 @@ body.child-interface {
 }
 
 .fp-popup-icon {
-  font-size: 4rem;
-  margin-bottom: var(--spacing-md);
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--spacing-md);
+  object-fit: contain;
   animation: rotate 1s ease-in-out;
+  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.5));
 }
 
 @keyframes rotate {
@@ -1374,4 +1402,50 @@ body.child-interface {
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(255, 165, 0, 0.4);
   z-index: 10;
+}
+
+
+/* ============================================
+   ANIMAÇÕES DE MOEDAS CAINDO
+   ============================================ */
+
+@keyframes fall {
+  0% {
+    top: -50px;
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0.8;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes collect {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.2) translateY(-100px);
+    opacity: 0;
+  }
+}
+
+.falling-coin {
+  filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.4));
+}
+
+.falling-coin:hover {
+  animation-play-state: paused !important;
+}
+
+/* FP Display hover effect */
+.fp-display:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(255, 165, 0, 0.5);
 }

@@ -1,6 +1,10 @@
 // E-KIDS PRO - Interface Infantil com Navegação
 const API_URL = window.location.origin;
 
+// Constante para ícone da moeda FP
+const FP_ICON = '<img src="/images/moedafp1.png" alt="FP" style="width: 20px; height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" />';
+const FP_ICON_LARGE = '<img src="/images/moedafp1.png" alt="FP" style="width: 32px; height: 32px; object-fit: contain; display: inline-block; vertical-align: middle;" />';
+
 // Estado global
 let currentChild = null;
 let currentModule = null;
@@ -157,7 +161,7 @@ function showChildSelector(children) {
             <div class="child-avatar">${child.avatar || '😊'}</div>
             <h3>${child.name}</h3>
             <p>${child.age} anos</p>
-            <p class="child-fp">${child.total_fp} FP ⭐</p>
+            <p class="child-fp">${child.total_fp} FP ${FP_ICON}</p>
           </div>
         `).join('')}
       </div>
@@ -225,6 +229,7 @@ function updateHeaderInfo() {
   if (currentChild) {
     document.getElementById('child-name').textContent = currentChild.name;
     document.getElementById('total-fp').textContent = currentChild.fp || 0;
+    updateFPProgress(currentChild.fp || 0);
   }
 }
 
@@ -391,7 +396,7 @@ function renderMissions(missions) {
       <div class="module-icon">${areaIcons[mission.area] || '⭐'}</div>
       <h3 class="module-name">${mission.title}</h3>
       <p class="module-desc">${mission.description}</p>
-      <div class="module-fp">+${mission.fp_reward} FP ⭐</div>
+      <div class="module-fp">+${mission.fp_reward} FP ${FP_ICON}</div>
       ${mission.completed
         ? '<span class="completed-badge">✓ Completo</span>'
         : '<button class="btn-module">Começar!</button>'}
@@ -701,7 +706,7 @@ function renderStoreItems(items) {
     <div class="store-item-card">
       <div class="item-name">${item.name}</div>
       <div class="item-description">${item.description}</div>
-      <div class="item-cost">${item.cost_fp} FP ⭐</div>
+      <div class="item-cost">${item.cost_fp} FP ${FP_ICON}</div>
       <button class="btn-buy" onclick="buyStoreItem(${item.id}, ${item.cost_fp})">Comprar</button>
     </div>
   `).join('');
@@ -1060,9 +1065,143 @@ function showFPPopup(mainText, subText) {
 
   popup.style.display = 'flex';
 
+  // Tocar som de moeda
+  if (window.soundEffects) {
+    window.soundEffects.playCoin();
+  }
+
   setTimeout(() => {
     popup.style.display = 'none';
   }, 3000);
+}
+
+// ============================================
+// CONTROLE DE SOM
+// ============================================
+
+function toggleSound() {
+  if (window.soundEffects) {
+    const enabled = window.soundEffects.toggle();
+    const icon = document.getElementById('sound-icon');
+    if (icon) {
+      icon.textContent = enabled ? '🔊' : '🔇';
+    }
+    // Feedback sonoro se ativou
+    if (enabled) {
+      window.soundEffects.playClick();
+    }
+  }
+}
+
+// ============================================
+// CELEBRAÇÃO COM MOEDAS CAINDO
+// ============================================
+
+function triggerCelebration() {
+  // Tocar som de level up
+  if (window.soundEffects) {
+    window.soundEffects.playLevelUp();
+  }
+
+  // Criar container para moedas se não existir
+  let container = document.getElementById('coins-celebration-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'coins-celebration-container';
+    container.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 10000;
+      overflow: hidden;
+    `;
+    document.body.appendChild(container);
+  }
+
+  // Criar múltiplas moedas caindo
+  const numCoins = 15;
+  for (let i = 0; i < numCoins; i++) {
+    setTimeout(() => {
+      createFallingCoin(container);
+    }, i * 100);
+  }
+}
+
+// ============================================
+// PROGRESS BAR DE FP
+// ============================================
+
+function updateFPProgress(currentFP) {
+  // Calcular progresso até o próximo milestone (cada 100 FP)
+  const milestone = 100;
+  const progress = (currentFP % milestone) / milestone * 100;
+
+  // Atualizar barra de progresso
+  const fpDisplay = document.querySelector('.fp-display');
+  if (fpDisplay && fpDisplay.querySelector('::before')) {
+    fpDisplay.style.setProperty('--fp-progress', `${progress}%`);
+  }
+}
+
+function createFallingCoin(container) {
+  const coin = document.createElement('img');
+  coin.src = '/images/moedafp1.png';
+  coin.className = 'falling-coin';
+
+  // Posição inicial aleatória
+  const startX = Math.random() * window.innerWidth;
+  const rotation = Math.random() * 360;
+  const duration = 2 + Math.random() * 2; // 2-4 segundos
+  const delay = Math.random() * 0.5;
+
+  coin.style.cssText = `
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: ${startX}px;
+    top: -50px;
+    animation: fall ${duration}s ease-in ${delay}s forwards, spin ${duration}s linear infinite;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.2s;
+  `;
+
+  // Efeito de hover
+  coin.addEventListener('mouseenter', function() {
+    this.style.transform = 'scale(1.3)';
+    this.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #FFD700)';
+    if (window.soundEffects) {
+      window.soundEffects.playClick();
+    }
+  });
+
+  coin.addEventListener('mouseleave', function() {
+    this.style.transform = 'scale(1)';
+    this.style.filter = '';
+  });
+
+  // Ao clicar na moeda
+  coin.addEventListener('click', function() {
+    if (window.soundEffects) {
+      window.soundEffects.playCoin();
+    }
+    this.style.animation = 'collect 0.3s ease-out forwards';
+    setTimeout(() => {
+      this.remove();
+    }, 300);
+  });
+
+  container.appendChild(coin);
+
+  // Remover moeda após animação
+  setTimeout(() => {
+    if (coin.parentNode) {
+      coin.remove();
+    }
+  }, (duration + delay) * 1000 + 500);
 }
 
 function getAuthHeaders() {

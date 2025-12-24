@@ -1,5 +1,8 @@
 // E-KIDS PRO MVP - App Principal
 
+// Constante para ícone da moeda FP
+const FP_ICON = '<img src="/images/moedafp1.png" alt="FP" style="width: 20px; height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" />';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const loading = document.getElementById('loading');
   const authScreen = document.getElementById('auth-screen');
@@ -60,7 +63,7 @@ function renderChildren(children) {
       <div class="child-avatar">${avatarEmoji}</div>
       <h3>${child.name}</h3>
       <p>Nível do Mascote: ${child.mascot_level || 1}</p>
-      <div class="fp-badge">⭐ ${child.total_fp} FP</div>
+      <div class="fp-badge">${FP_ICON} ${child.total_fp} FP</div>
     `;
 
     container.appendChild(card);
