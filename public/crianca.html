@@ -347,14 +347,15 @@
   <script src="/js/auth.js"></script>
   <script src="/js/sound-effects.js"></script>
   <script src="/js/audio-manager.js"></script>
-  <script src="/js/chatbot.js"></script>
   <script src="/js/child.js"></script>
+  <script src="/js/chatbot.js"></script>
   <script>
-    // Inicializar chatbot Lu quando a página carregar
+    // Inicializar chatbot Lu APÓS a página estar completamente carregada
     let chatbot;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Aguardar child.js carregar os dados da criança
+    // Usar evento 'load' em vez de 'DOMContentLoaded' para garantir que tudo foi carregado
+    window.addEventListener('load', () => {
+      // Aguardar 2 segundos para garantir que child.js inicializou completamente
       setTimeout(() => {
         try {
           const currentChild = JSON.parse(localStorage.getItem('current_child') || '{}');
@@ -379,7 +380,7 @@
               chatContainer.style.display = 'none';
             }
 
-            // Verificar saúde do servidor após 2 segundos
+            // Verificar saúde do servidor
             setTimeout(() => {
               if (chatbot && chatbot.checkHealth) {
                 chatbot.checkHealth().catch(err => console.error('Erro ao verificar saúde:', err));
@@ -389,7 +390,7 @@
         } catch (error) {
           console.error('Erro ao inicializar chatbot:', error);
         }
-      }, 1000);
+      }, 2000);
     });
   </script>
 </body>
