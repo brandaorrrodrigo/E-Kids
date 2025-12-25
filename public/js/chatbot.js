@@ -217,6 +217,8 @@ class Chatbot {
 
     if (!message || this.isTyping) return;
 
+    console.log('💬 Enviando mensagem:', message);
+
     // Limpar input
     input.value = '';
 
@@ -228,6 +230,9 @@ class Chatbot {
 
     try {
       const url = `${this.apiUrl}/api/chat`;
+      console.log('📡 URL da API:', url);
+      console.log('👤 Child ID:', this.childId);
+      console.log('🔑 Token:', this.token ? 'Presente' : 'Ausente');
 
       // Enviar para API
       const response = await fetch(url, {
@@ -244,7 +249,9 @@ class Chatbot {
         })
       });
 
+      console.log('📥 Response status:', response.status);
       const data = await response.json();
+      console.log('📥 Response data:', data);
 
       // Remover typing indicator
       this.hideTypingIndicator();
@@ -261,12 +268,12 @@ class Chatbot {
         // Recarregar sugestões
         await this.loadSuggestions();
       } else {
-        console.error('Erro na resposta:', data.error);
+        console.error('❌ Erro na resposta:', data.error);
         this.addMessage('assistant', `Ops! ${data.error || 'Erro desconhecido'} 😅`);
       }
 
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      console.error('❌ Erro ao enviar mensagem:', error);
       this.hideTypingIndicator();
       this.addMessage('assistant', 'Ops! A Lu teve um probleminha. Tenta de novo? 😅');
     }

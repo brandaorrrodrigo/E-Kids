@@ -12,8 +12,8 @@ class AudioManager {
     this.useTTSAPI = true; // Usar API TTS em vez de Web Speech
     this.voiceSettings = {
       rate: 0.9,      // Velocidade (0.1 a 10)
-      pitch: 0.95,    // Tom natural e suave, sem fanhosidade (0 a 2)
-      volume: 0.85,   // Volume (0 a 1)
+      pitch: 1.3,     // Tom mais alto para voz feminina doce (0 a 2)
+      volume: 1.0,    // Volume (0 a 1)
       lang: 'pt-BR'   // Idioma
     };
 
@@ -281,13 +281,13 @@ class AudioManager {
    * Narra mensagem do chatbot
    */
   speakChatMessage(message, context = 'general') {
-    // Vozes diferentes por contexto - tom natural sem fanhosidade
+    // Vozes diferentes por contexto - tom feminino doce e meigo
     const contextSettings = {
-      general: { rate: 0.9, pitch: 0.95 },
-      financial: { rate: 0.88, pitch: 0.92 },
-      nature: { rate: 0.92, pitch: 0.98 },
-      hygiene: { rate: 0.9, pitch: 0.95 },
-      tutor: { rate: 0.88, pitch: 0.92 }
+      general: { rate: 0.9, pitch: 1.3 },
+      financial: { rate: 0.85, pitch: 1.25 },
+      nature: { rate: 0.9, pitch: 1.35 },
+      hygiene: { rate: 0.9, pitch: 1.3 },
+      tutor: { rate: 0.85, pitch: 1.25 }
     };
 
     this.speak(message, contextSettings[context] || contextSettings.general);

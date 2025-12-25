@@ -346,10 +346,65 @@
 
   <script src="/js/auth.js"></script>
   <script src="/js/sound-effects.js"></script>
-  <script src="/js/child.js"></script>
-  <!-- Chatbot temporariamente desabilitado para debug
   <script src="/js/audio-manager.js"></script>
   <script src="/js/chatbot.js"></script>
-  -->
+  <script src="/js/child.js"></script>
+  <script>
+    // Inicializar chatbot Lu quando a página carregar
+    let chatbot;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Aguardar child.js carregar os dados da criança
+      setTimeout(() => {
+        const currentChild = JSON.parse(localStorage.getItem('current_child') || '{}');
+        const token = localStorage.getItem('ekids_token');
+
+        console.log('🤖 Inicializando chatbot...');
+        console.log('API_URL:', typeof API_URL !== 'undefined' ? API_URL : 'undefined');
+        console.log('Token:', token ? 'Presente' : 'Ausente');
+        console.log('Child ID:', currentChild.id || 'Ausente');
+
+        if (currentChild.id && token) {
+          try {
+            // Usar API_URL se disponível, senão usar origin
+            const apiUrl = typeof API_URL !== 'undefined' ? API_URL : window.location.origin;
+
+            // Criar instância do chatbot
+            chatbot = new Chatbot(apiUrl, token, currentChild.id);
+            console.log('✅ Chatbot criado com sucesso');
+
+            // Renderizar botão flutuante "Fale com a Lu"
+            chatbot.renderFloatingButton('chatbot-button-container');
+            console.log('✅ Botão flutuante renderizado');
+
+            // Renderizar interface do chat (inicialmente oculta)
+            chatbot.render('chatbot-container');
+            console.log('✅ Interface do chat renderizada');
+
+            // Esconder o chat inicialmente
+            const chatContainer = document.getElementById('chat-container');
+            if (chatContainer) {
+              chatContainer.style.display = 'none';
+            }
+
+            // Verificar saúde do servidor após 2 segundos
+            setTimeout(() => {
+              chatbot.checkHealth().then(health => {
+                console.log('🏥 Saúde do servidor:', health);
+              });
+            }, 2000);
+
+          } catch (error) {
+            console.error('❌ Erro ao inicializar chatbot:', error);
+          }
+        } else {
+          console.warn('⚠️ Chatbot não inicializado - faltam dados:', {
+            hasChildId: !!currentChild.id,
+            hasToken: !!token
+          });
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 </html>

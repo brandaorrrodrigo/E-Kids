@@ -429,9 +429,11 @@ setupStripeRoutes(app, db, authenticate);
 // ============================================
 // TEXT-TO-SPEECH (Piper TTS)
 // ============================================
-// Ativar rotas TTS locais (Google TTS de alta qualidade)
-const ttsRoutes = require('./tts-routes');
-app.use('/api/tts', ttsRoutes);
+// NOTA: TTS agora está no servidor de chat isolado (server-chat/)
+// O servidor principal não precisa mais dessas rotas
+
+// const ttsRoutes = require('./tts-routes');
+// app.use('/api/tts', ttsRoutes);
 
 // ============================================
 // CRIANÇAS
